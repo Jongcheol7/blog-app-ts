@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  accounts      Account[]
+  sessions      Session[]
+  blog          Blog[]
+  comment       Comment[]
+  guestbook     Guestbook[]
+  blogLikes     BlogLikes[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Blog {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String 
+  imageUrl   String?
+  userId     String 
+  views      Int      @default(0)
+  privateYn  Boolean 
+  categoryId Int? 
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime?
+  deletedAt  DateTime?
+
+  user      User     @relation(fields:[userId], references:[id])
+  category  Category? @relation(fields:[categoryId], references: [id])
+  comments  Comment[]
+  blogLikes BlogLikes[]
+  blogTags  BlogTags[]
+}
+
+model BlogLikes {
+  id        Int @id @default(autoincrement())
+  userId    String
+  blogId    Int 
+  createdAt DateTime @default(now())
+
+  user   User @relation(fields: [userId], references: [id])
+  blog   Blog @relation(fields: [blogId], references: [id])
+
+  @@unique([userId, blogId])
+}
+
+model Tags {
+  id        Int @id @default(autoincrement())
+  name      String @unique
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
+
+  blogTags BlogTags[] 
+}
+
+model BlogTags {
+  blogId    Int
+  tagId     Int
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
+
+  blog Blog @relation(fields: [blogId], references: [id])
+  tag  Tags @relation(fields: [tagId], references: [id])
+  @@id([blogId, tagId])
+}
+
+model Comment {
+  id         Int @id @default(autoincrement())
+  blogId     Int 
+  userId     String 
+  content    String 
+  parentId   Int?
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime?
+  deletedAt  DateTime?
+
+  user User @relation(fields:[userId], references:[id])
+  blog Blog @relation(fields:[blogId], references:[id])
+}
+
+model Category {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  parentId Int?
+
+  parent   Category?  @relation("CategoryToSelf", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryToSelf")
+  blogs    Blog[]
+}
+
+model Guestbook {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  content    String
+  secretYn   Boolean
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime?
+  deletedAt  DateTime?
+
+  user       User    @relation(fields: [userId], references: [id])
+}

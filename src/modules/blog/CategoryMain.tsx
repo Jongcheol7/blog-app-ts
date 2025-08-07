@@ -14,30 +14,29 @@ type CategoryType = {
   name: string;
   parentId?: number;
 };
-export default function CategoryMain() {
+
+type Props = {
+  category: string;
+  setCategory: (val: string) => void;
+};
+export default function CategoryMain({ category, setCategory }: Props) {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("");
   const { data } = useCategoryLists();
 
   const handleCategory = (val: string) => {
     if (val === "add") {
-      setSelectedCategory("");
+      setCategory("");
       setShowCategoryPopup(true);
     } else {
-      setSelectedCategory(val);
+      setCategory(val);
     }
   };
 
   return (
     <div>
-      <Select
-        onValueChange={(value) => handleCategory(value)}
-        value={selectedCategory}
-      >
+      <Select onValueChange={(value) => handleCategory(value)} value={category}>
         <SelectTrigger>
-          <SelectValue placeholder="Select a category">
-            {selectedCategory}
-          </SelectValue>
+          <SelectValue placeholder="Select a category">{category}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="add">Add</SelectItem>

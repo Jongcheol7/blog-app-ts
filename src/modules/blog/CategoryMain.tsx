@@ -1,10 +1,10 @@
 import {
   Select,
   SelectContent,
+  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SelectItem } from "@radix-ui/react-select";
 import { useState } from "react";
 import CategoryPopup from "./CategoryPopup";
 import { useCategoryLists } from "@/hooks/useCategoryLists";
@@ -24,7 +24,8 @@ export default function CategoryMain({ category, setCategory }: Props) {
   const { data } = useCategoryLists();
 
   const handleCategory = (val: string) => {
-    if (val === "add") {
+    console.log("핸들카테고리 실행됨 : ", val);
+    if (val === "-1") {
       setCategory("");
       setShowCategoryPopup(true);
     } else {
@@ -32,17 +33,23 @@ export default function CategoryMain({ category, setCategory }: Props) {
     }
   };
 
+  const selectedCategoryName =
+    data?.categoryLists.find((cat: CategoryType) => String(cat.id) === category)
+      ?.name || "";
+
   return (
     <div>
       <Select onValueChange={(value) => handleCategory(value)} value={category}>
         <SelectTrigger>
-          <SelectValue placeholder="Select a category">{category}</SelectValue>
+          <SelectValue placeholder="Select a category">
+            {selectedCategoryName}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="add">Add</SelectItem>
+          <SelectItem value="-1">Add</SelectItem>
           {data?.categoryLists &&
             data?.categoryLists?.map((cat: CategoryType) => (
-              <SelectItem key={cat.id} value={cat.name}>
+              <SelectItem key={cat.id} value={String(cat.id)}>
                 {cat.name}
               </SelectItem>
             ))}

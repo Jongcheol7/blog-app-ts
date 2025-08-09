@@ -6,7 +6,9 @@ export function useBlogWriteMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (formData: BlogForm) => {
-      const res = await axios.post("/blog/save", { formData });
+      console.log("save api 전");
+      console.log("formData : ", formData);
+      const res = await axios.post("/api/blog/save", formData);
       return res.data;
     },
     onSuccess: () => {

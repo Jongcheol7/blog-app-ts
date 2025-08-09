@@ -3,4 +3,6 @@ type BlogForm = {
   content: string;
   tags: string[];
   category: string;
+  imageUrl: string;
+  privateYn: boolean;
 };

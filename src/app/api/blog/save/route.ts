@@ -1,0 +1,89 @@
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import { prisma } from "@/lib/prisma";
+
+export async function POST(request: Request) {
+  const { title, content, tags, category, imageUrl, privateYn } =
+    await request.json();
+
+  console.log("title : ", title);
+  console.log("content : ", content);
+  console.log("tags : ", tags);
+  console.log("category : ", category);
+  console.log("privateYn : ", privateYn);
+
+  if (!title || title.trim().length === 0) {
+    console.error("글 제목이 없습니다.");
+    return NextResponse.json({ error: "글 제목이 없습니다." }, { status: 400 });
+  }
+  if (!content || content.trim().length === 0) {
+    console.error("글 내용이 없습니다.");
+    return NextResponse.json({ error: "글 내용이 없습니다." }, { status: 400 });
+  }
+  if (!imageUrl || imageUrl.trim().length === 0) {
+    console.error("썸네일이 없습니다.");
+    return NextResponse.json({ error: "썸네일이 없습니다." }, { status: 400 });
+  }
+  if (!category || category.trim().length === 0) {
+    console.error("카테고리가 없습니다.");
+    return NextResponse.json(
+      { error: "카테고리가 없습니다." },
+      { status: 400 }
+    );
+  }
+
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    console.error("로그인 정보가 없습니다.");
+    return NextResponse.json(
+      { error: "로그인 정보가 없습니다." },
+      { status: 401 }
+    );
+  }
+
+  try {
+    // Tags 저장
+    const tagResults = await Promise.all(
+      tags.map((tag: string) =>
+        prisma.tags.upsert({
+          where: { name: tag },
+          update: {},
+          create: { name: tag },
+        })
+      )
+    );
+
+    // Blog 저장
+    const blogResult = await prisma.blog.create({
+      data: {
+        title,
+        content,
+        userId: session.user.id,
+        privateYn,
+        imageUrl,
+        categoryId: Number(category),
+      },
+    });
+
+    // BlogTags 저장
+    await Promise.all(
+      tagResults.map((tag) =>
+        prisma.blogTags.create({
+          data: {
+            blogId: blogResult.id,
+            tagId: tag.id,
+          },
+        })
+      )
+    );
+
+    return NextResponse.json({ blogResult });
+  } catch (err) {
+    console.error("글 저장에 실패했습니다." + err);
+    return NextResponse.json(
+      { error: "글 저장에 실패했습니다.: " + err },
+      { status: 500 }
+    );
+  }
+}

@@ -72,7 +72,7 @@ model Blog {
   deletedAt  DateTime?
 
   user      User     @relation(fields:[userId], references:[id])
-  category  Category? @relation(fields:[categoryId], references: [id])
+  category  Category? @relation(fields:[categoryId], references:[id])
   comments  Comment[]
   blogLikes BlogLikes[]
   blogTags  BlogTags[]
@@ -127,10 +127,7 @@ model Comment {
 model Category {
   id       Int     @id @default(autoincrement())
   name     String  @unique
-  parentId Int?
 
-  parent   Category?  @relation("CategoryToSelf", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryToSelf")
   blogs    Blog[]
 }
 

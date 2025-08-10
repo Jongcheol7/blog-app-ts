@@ -65,7 +65,6 @@ export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
         <input
           {...getInputProps()}
           type="file"
-          accept="image/png, image/jpeg"
           className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-green-100 file:text-green-700 hover:file:bg-green-200"
         />
       </div>

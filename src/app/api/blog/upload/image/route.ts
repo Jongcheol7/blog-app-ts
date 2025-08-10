@@ -28,6 +28,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     uploadUrl: signedUrl,
-    fileUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`,
+    //fileUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`,
+    fileUrl: `${process.env.CLOUDFRONT_DOMAIN_NAME}/${fileName}`,
   });
 }

@@ -12,6 +12,7 @@ export async function POST(request: Request) {
   console.log("tags : ", tags);
   console.log("category : ", category);
   console.log("privateYn : ", privateYn);
+  console.log("imageUrl : ", imageUrl);
 
   if (!title || title.trim().length === 0) {
     console.error("글 제목이 없습니다.");

@@ -18,8 +18,9 @@ type CategoryType = {
 type Props = {
   category: string;
   setCategory: (val: string) => void;
+  readYn: boolean;
 };
-export default function CategoryMain({ category, setCategory }: Props) {
+export default function CategoryMain({ category, setCategory, readYn }: Props) {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const { data } = useCategoryLists();
 
@@ -33,28 +34,32 @@ export default function CategoryMain({ category, setCategory }: Props) {
     }
   };
 
-  const selectedCategoryName =
-    data?.categoryLists.find((cat: CategoryType) => String(cat.id) === category)
-      ?.name || "";
+  const selectedCategoryName = (val: number) => {
+    return (
+      data?.categoryLists.find((cat: CategoryType) => cat.id === val)?.name ||
+      ""
+    );
+  };
 
   return (
     <div>
-      <Select onValueChange={(value) => handleCategory(value)} value={category}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select a category">
-            {selectedCategoryName}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="-1">Add</SelectItem>
+      {!readYn ? (
+        <select
+          onChange={(e) => handleCategory(e.target.value)}
+          value={category}
+        >
+          <option value={"-1"}>Add</option>
           {data?.categoryLists &&
             data?.categoryLists?.map((cat: CategoryType) => (
-              <SelectItem key={cat.id} value={String(cat.id)}>
+              <option key={cat.id} value={String(cat.id)}>
                 {cat.name}
-              </SelectItem>
+              </option>
             ))}
-        </SelectContent>
-      </Select>
+        </select>
+      ) : (
+        <div>{selectedCategoryName(Number(category))}</div>
+      )}
+
       {showCategoryPopup && <CategoryPopup setShow={setShowCategoryPopup} />}
     </div>
   );

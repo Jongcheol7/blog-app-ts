@@ -55,7 +55,11 @@ export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
           </div>
         ) : (
           <Image
-            src={URL.createObjectURL(pickedImage)}
+            src={
+              typeof pickedImage === "string"
+                ? pickedImage
+                : URL.createObjectURL(pickedImage)
+            }
             alt="Selected Image"
             width={150}
             height={120}

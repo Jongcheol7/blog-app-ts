@@ -1,15 +1,19 @@
+"use client";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import DOMPurify from "dompurify";
 import Image from "next/image";
 import { TimeTransform } from "../common/TimeTransform";
+import { useRouter } from "next/navigation";
 
 type Props = {
   blog: BlogForm;
 };
 
 export default function BlogCard({ blog }: Props) {
+  const router = useRouter();
+
   return (
-    <Card>
+    <Card onClick={() => router.push(`details/${blog.id}`)}>
       <CardContent className="group relative">
         <div className="flex relative w-full h-[300px] group-hover:blur-xs">
           <Image

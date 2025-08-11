@@ -65,7 +65,7 @@ export default function BlogMain() {
         </Link>
       </div>
       <div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-2">
           {allBlogs &&
             allBlogs.map((blog) => <BlogCard key={blog.id} blog={blog} />)}
         </div>

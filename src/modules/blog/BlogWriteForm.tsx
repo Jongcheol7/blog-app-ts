@@ -149,7 +149,11 @@ export default function BlogWriteForm() {
       <form className=" flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex justify-between">
           <div className="flex flex-1">
-            <CategoryMain category={category} setCategory={setCategory} />
+            <CategoryMain
+              category={category}
+              setCategory={setCategory}
+              readYn={false}
+            />
             <div className="flex items-center ml-5">
               <label htmlFor="privateYn" className="w-[100px] text-gray-600">
                 비밀글 설정

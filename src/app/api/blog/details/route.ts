@@ -10,6 +10,9 @@ export async function GET(request: Request) {
       where: {
         id,
       },
+      include: {
+        blogTags: { include: { tag: true } },
+      },
     });
     return NextResponse.json({ details });
   } catch (err) {

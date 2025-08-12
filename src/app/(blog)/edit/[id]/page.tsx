@@ -1,4 +1,4 @@
-import BlogDetails from "@/modules/blog/BlogDetails";
+import BlogEditForm from "@/modules/blog/BlogEditForm";
 
 type Props = {
   params: {
@@ -8,5 +8,5 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  return <BlogDetails id={id} />;
+  return <BlogEditForm id={id} />;
 }

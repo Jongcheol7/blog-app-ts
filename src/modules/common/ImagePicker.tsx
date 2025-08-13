@@ -7,8 +7,8 @@ import { toast } from "sonner";
 import imageCompression from "browser-image-compression";
 
 type Props = {
-  pickedImage: File | null;
-  setPickedImage: (val: File | null) => void;
+  pickedImage: File | null | string;
+  setPickedImage: (val: File | null | string) => void;
 };
 
 export default function ImagePicker({ pickedImage, setPickedImage }: Props) {

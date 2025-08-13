@@ -4,9 +4,10 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const { title, content, tags, category, imageUrl, privateYn } =
+  const { id, title, content, tags, category, imageUrl, privateYn } =
     await request.json();
 
+  console.log("id : ", id);
   console.log("title : ", title);
   console.log("content : ", content);
   console.log("tags : ", tags);
@@ -21,10 +22,6 @@ export async function POST(request: Request) {
   if (!content || content.trim().length === 0) {
     console.error("글 내용이 없습니다.");
     return NextResponse.json({ error: "글 내용이 없습니다." }, { status: 400 });
-  }
-  if (!imageUrl || imageUrl.trim().length === 0) {
-    console.error("썸네일이 없습니다.");
-    return NextResponse.json({ error: "썸네일이 없습니다." }, { status: 400 });
   }
   if (!category || category.trim().length === 0) {
     console.error("카테고리가 없습니다.");
@@ -56,8 +53,9 @@ export async function POST(request: Request) {
     );
 
     // Blog 저장
-    const blogResult = await prisma.blog.create({
-      data: {
+    const blogResult = await prisma.blog.upsert({
+      where: { id },
+      create: {
         title,
         content,
         userId: session.user.id,
@@ -65,6 +63,18 @@ export async function POST(request: Request) {
         imageUrl,
         categoryId: Number(category),
       },
+      update: {
+        title,
+        content,
+        privateYn,
+        imageUrl,
+        categoryId: Number(category),
+      },
+    });
+
+    // 기존 Tags 삭제
+    await prisma.blogTags.deleteMany({
+      where: { blogId: id },
     });
 
     // BlogTags 저장

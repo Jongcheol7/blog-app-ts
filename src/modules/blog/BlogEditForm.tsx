@@ -14,7 +14,6 @@ import imageCompression from "browser-image-compression";
 import ImagePicker from "../common/ImagePicker";
 import { UploadToS3 } from "../common/UploadToS3";
 import { useBlogDetails } from "@/hooks/useBlogDetails";
-import { UrlToFile } from "../common/UrlToFile";
 
 // 마크다운 에디터
 const ToastEditor = dynamic(
@@ -23,13 +22,16 @@ const ToastEditor = dynamic(
 );
 
 export default function BlogEditForm({ id }: { id: string }) {
+  debugger;
   const editorRef = useRef<Editor>(null);
+  const [initalContent, setInitialContent] = useState<string>("");
   const [category, setCategory] = useState("");
-  const [pickedImage, setPickedImage] = useState<File | null>(null);
+  const [pickedImage, setPickedImage] = useState<File | null | string>(null);
   const { data } = useBlogDetails(Number(id));
   const { register, setValue, getValues, handleSubmit, watch, reset } =
     useForm<BlogForm>({
       defaultValues: {
+        id: 0,
         title: "",
         content: "",
         tags: [],
@@ -48,25 +50,20 @@ export default function BlogEditForm({ id }: { id: string }) {
   }, [category, setValue]);
 
   useEffect(() => {
+    debugger;
     if (!data) return;
     console.log("조회 data : ", data);
     reset({
+      id: data.details.id ?? 0,
       title: data.details.title ?? "",
-      content: data.details.content ?? "",
-      tags: data.details.blogTags.map((bt) => bt.tag.name),
-
-      //category:
-      //imageUrl: data.details.imageUrl ?? "",
+      tags: data.details.blogTags.map(
+        (bt: { tag: { name: string } }) => bt.tag.name
+      ),
       privateYn: !!data.details.privateYn,
+      category: String(data.details.categoryId ?? ""),
     });
-
-    //const file = await UrlToFile(data.details.imageUrl, "thumbnail.jpg");
-    //setPickedImage(file);
-
-    const instance = editorRef.current?.getInstance();
-    if (instance && data.details.content) {
-      instance.setHTML(data.details.content);
-    }
+    setPickedImage(data.details.imageUrl);
+    setInitialContent(data.details.content ?? "");
   }, [data, reset]);
 
   // 태그 추가 이벤트
@@ -123,9 +120,12 @@ export default function BlogEditForm({ id }: { id: string }) {
     // 썸네일을 S3에 넣는 작업 해보자.
     // presigned URL 요청 + S3 업로드
     if (pickedImage) {
-      const fileUrl = await UploadToS3(pickedImage, "thumbnail");
-      if (!fileUrl) return false;
-      setValue("imageUrl", fileUrl);
+      if (typeof pickedImage === "string") {
+        setValue("imageUrl", pickedImage);
+      } else {
+        const fileUrl = await UploadToS3(pickedImage, "thumbnail");
+        if (!fileUrl) return false;
+      }
     } else {
       toast.error("썸네일은 필수입니다.");
       return false;
@@ -225,7 +225,7 @@ export default function BlogEditForm({ id }: { id: string }) {
 
         <ToastEditor
           ref={editorRef}
-          initialValue=" "
+          initialValue={initalContent}
           previewStyle="vertical"
           height="600px"
           initialEditType="wysiwyg"

@@ -119,12 +119,17 @@ export default function BlogEditForm({ id }: { id: string }) {
 
     // 썸네일을 S3에 넣는 작업 해보자.
     // presigned URL 요청 + S3 업로드
+    console.log("edit form 에서 저장할 img : ", pickedImage);
+    console.log("edit form 에서 저장할 img type: ", typeof pickedImage);
     if (pickedImage) {
       if (typeof pickedImage === "string") {
         setValue("imageUrl", pickedImage);
       } else {
         const fileUrl = await UploadToS3(pickedImage, "thumbnail");
+        console.log("S3 presigned fileUrl : ", fileUrl);
         if (!fileUrl) return false;
+        setValue("imageUrl", fileUrl);
+        data.imageUrl = fileUrl;
       }
     } else {
       toast.error("썸네일은 필수입니다.");
@@ -225,7 +230,7 @@ export default function BlogEditForm({ id }: { id: string }) {
 
         <ToastEditor
           ref={editorRef}
-          initialValue={initalContent}
+          initialValue={initalContent ?? " "}
           previewStyle="vertical"
           height="600px"
           initialEditType="wysiwyg"

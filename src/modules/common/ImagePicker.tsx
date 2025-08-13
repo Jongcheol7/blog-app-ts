@@ -14,6 +14,23 @@ type Props = {
 export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
   const onDrop = useCallback(
     async (files: File[]) => {
+      debugger;
+
+      // 수정화면일때는 사진을 교체시 S3에서 제거.
+      if (
+        typeof pickedImage === "string" &&
+        pickedImage.startsWith(
+          process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN_NAME as string
+        )
+      ) {
+        debugger;
+        fetch("/api/blog/upload/delete", {
+          method: "POST",
+          body: JSON.stringify({ imageUrl: pickedImage, folder: "thumbnail" }),
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
       if (files.length > 1) {
         toast.error("사진은 한장만 첨부 가능합니다.");
         return false;
@@ -31,7 +48,7 @@ export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
 
       setPickedImage(compressedFile);
     },
-    [setPickedImage]
+    [setPickedImage, pickedImage]
   );
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({

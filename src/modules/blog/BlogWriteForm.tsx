@@ -3,27 +3,21 @@
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import "@toast-ui/editor/dist/toastui-editor.css";
 import { useEffect, useRef, useState } from "react";
-import { Editor } from "@toast-ui/react-editor";
 import CategoryMain from "./CategoryMain";
-import dynamic from "next/dynamic";
 import { useBlogWriteMutation } from "@/hooks/useBlogWriteMutations";
 import { Button } from "@/components/ui/button";
 import imageCompression from "browser-image-compression";
 import ImagePicker from "../common/ImagePicker";
 import { UploadToS3 } from "../common/UploadToS3";
-
-// 마크다운 에디터
-const ToastEditor = dynamic(
-  () => import("@toast-ui/react-editor").then((mod) => mod.Editor),
-  { ssr: false }
-);
+import Editor from "../common/Editor";
 
 export default function BlogWriteForm() {
-  const editorRef = useRef<Editor>(null);
+  const [editor, setEditor] = useState(null);
   const [category, setCategory] = useState("");
   const [pickedImage, setPickedImage] = useState<File | null>(null);
+  const [contentHtml, setContentHtml] = useState<string>(""); // CKEditor 내용
+
   const { register, setValue, getValues, handleSubmit, watch } =
     useForm<BlogForm>({
       defaultValues: {
@@ -36,11 +30,11 @@ export default function BlogWriteForm() {
       },
     });
   watch("tags");
+
   const { mutate: saveMutation, isPending: savingPending } =
     useBlogWriteMutation();
 
   useEffect(() => {
-    console.log("category : ", category);
     setValue("category", category);
   }, [category, setValue]);
 
@@ -89,7 +83,7 @@ export default function BlogWriteForm() {
     data.category = getValues("category");
     console.log("data : ", data);
 
-    const html = editorRef.current?.getInstance().getHTML();
+    const html = contentHtml;
     if (!html || html.trim().length === 0) {
       toast.error("글 내용이 없습니다.");
       return false;
@@ -198,7 +192,15 @@ export default function BlogWriteForm() {
           </div>
         </div>
 
-        <ToastEditor
+        {/* Editor 영역 */}
+        <div
+          className="flex-1 border rounded-sm p-1 h-[300px]"
+          onClick={() => editor.chain().focus()}
+        >
+          <Editor setEditor={setEditor} content={""} />
+        </div>
+
+        {/* <ToastEditor
           ref={editorRef}
           initialValue=" "
           previewStyle="vertical"
@@ -233,7 +235,7 @@ export default function BlogWriteForm() {
               callback(tempSrc, compressedBlob.name);
             },
           }}
-        />
+        /> */}
       </form>
     </div>
   );

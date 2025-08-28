@@ -2,8 +2,6 @@
 import { useBlogDetails } from "@/hooks/useBlogDetails";
 import CategoryMain from "./CategoryMain";
 import { Input } from "@/components/ui/input";
-import "@toast-ui/editor/dist/toastui-editor.css";
-import { Viewer } from "@toast-ui/react-editor";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -43,16 +41,11 @@ export default function BlogDetails({ id }: { id: string }) {
             </Button>
           </div>
           <Input
+            className="border-none shadow-none font-bold"
             placeholder="제목을 입력하세요"
             value={data.details.title}
             readOnly
           />
-
-          <Card>
-            <CardContent>
-              <Viewer initialValue={data.details.content || ""} />
-            </CardContent>
-          </Card>
         </div>
       )}
     </>

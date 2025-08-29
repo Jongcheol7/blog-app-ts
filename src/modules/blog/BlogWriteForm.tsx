@@ -16,7 +16,6 @@ export default function BlogWriteForm() {
   const [editor, setEditor] = useState(null);
   const [category, setCategory] = useState("");
   const [pickedImage, setPickedImage] = useState<File | null>(null);
-  const [contentHtml, setContentHtml] = useState<string>(""); // CKEditor 내용
 
   const { register, setValue, getValues, handleSubmit, watch } =
     useForm<BlogForm>({
@@ -83,7 +82,7 @@ export default function BlogWriteForm() {
     data.category = getValues("category");
     console.log("data : ", data);
 
-    const html = contentHtml;
+    const html = editor.getHTML();
     if (!html || html.trim().length === 0) {
       toast.error("글 내용이 없습니다.");
       return false;

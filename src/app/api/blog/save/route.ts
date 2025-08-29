@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   }
-
+  console.log("태그 저장전");
   try {
     // Tags 저장
     const tagResults = await Promise.all(
@@ -51,26 +51,35 @@ export async function POST(request: Request) {
         })
       )
     );
+    console.log("tagResults : ", tagResults);
 
     // Blog 저장
-    const blogResult = await prisma.blog.upsert({
-      where: { id },
-      create: {
-        title,
-        content,
-        userId: session.user.id,
-        privateYn,
-        imageUrl,
-        categoryId: Number(category),
-      },
-      update: {
-        title,
-        content,
-        privateYn,
-        imageUrl,
-        categoryId: Number(category),
-      },
-    });
+    let blogResult;
+    if (id) {
+      blogResult = await prisma.blog.update({
+        where: { id },
+        data: {
+          title,
+          content,
+          privateYn,
+          imageUrl,
+          categoryId: Number(category),
+        },
+      });
+    } else {
+      blogResult = await prisma.blog.create({
+        data: {
+          title,
+          content,
+          userId: session.user.id,
+          privateYn,
+          imageUrl,
+          categoryId: Number(category),
+        },
+      });
+    }
+
+    console.log("blogResult : ", blogResult);
 
     // 기존 Tags 삭제
     await prisma.blogTags.deleteMany({

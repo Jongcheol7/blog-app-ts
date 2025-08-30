@@ -2,12 +2,14 @@
 import { useBlogDetails } from "@/hooks/useBlogDetails";
 import CategoryMain from "./CategoryMain";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import Editor from "../common/Editor";
+import { useState } from "react";
 
 export default function BlogDetails({ id }: { id: string }) {
   const { data } = useBlogDetails(Number(id));
+  const [editor, setEditor] = useState(null);
   const router = useRouter();
 
   return (
@@ -46,6 +48,14 @@ export default function BlogDetails({ id }: { id: string }) {
             value={data.details.title}
             readOnly
           />
+          {/* Editor 영역 */}
+          <div className="flex-1 rounded-sm p-1 h-[300px]">
+            <Editor
+              setEditor={setEditor}
+              content={data.details.content}
+              readOnly={true}
+            />
+          </div>
         </div>
       )}
     </>

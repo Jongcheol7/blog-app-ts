@@ -3,21 +3,25 @@
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import CategoryMain from "./CategoryMain";
 import { useBlogWriteMutation } from "@/hooks/useBlogWriteMutations";
 import { Button } from "@/components/ui/button";
-import imageCompression from "browser-image-compression";
 import ImagePicker from "../common/ImagePicker";
 import { UploadToS3 } from "../common/UploadToS3";
 import Editor from "../common/Editor";
+import { useBlogDetails } from "@/hooks/useBlogDetails";
+import type { Editor as TiptapEditor } from "@tiptap/react";
 
-export default function BlogWriteForm() {
-  const [editor, setEditor] = useState(null);
+export default function BlogWriteForm({ id }: { id: string }) {
+  const [editor, setEditor] = useState<TiptapEditor | null>(null);
   const [category, setCategory] = useState("");
   const [pickedImage, setPickedImage] = useState<File | null>(null);
+  const { data } = useBlogDetails(Number(id));
+  const { mutate: saveMutation, isPending: savingPending } =
+    useBlogWriteMutation();
 
-  const { register, setValue, getValues, handleSubmit, watch } =
+  const { register, setValue, getValues, handleSubmit, watch, reset } =
     useForm<BlogForm>({
       defaultValues: {
         title: "",
@@ -30,12 +34,22 @@ export default function BlogWriteForm() {
     });
   watch("tags");
 
-  const { mutate: saveMutation, isPending: savingPending } =
-    useBlogWriteMutation();
-
   useEffect(() => {
     setValue("category", category);
   }, [category, setValue]);
+
+  useEffect(() => {
+    if (!data) return;
+    reset({
+      id: data.details.id ?? 0,
+      title: data.details.title ?? "",
+      tags: data.details.blogTags.map(
+        (bt: { tag: { name: string } }) => bt.tag.name
+      ),
+      privateYn: !!data.details.privateYn,
+      category: String(data.details.category ?? ""),
+    });
+  }, [data, reset]);
 
   // 태그 추가 이벤트
   const handleTagsKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -82,7 +96,7 @@ export default function BlogWriteForm() {
     data.category = getValues("category");
     console.log("data : ", data);
 
-    const html = editor.getHTML();
+    const html = editor?.getHTML();
     if (!html || html.trim().length === 0) {
       toast.error("글 내용이 없습니다.");
       return false;
@@ -194,47 +208,14 @@ export default function BlogWriteForm() {
         {/* Editor 영역 */}
         <div
           className="flex-1 border rounded-sm p-1 h-[300px]"
-          onClick={() => editor.chain().focus()}
+          onClick={() => editor?.chain().focus()}
         >
-          <Editor setEditor={setEditor} content={""} />
+          <Editor
+            setEditor={setEditor}
+            content={data?.details.content}
+            readOnly={false}
+          />
         </div>
-
-        {/* <ToastEditor
-          ref={editorRef}
-          initialValue=" "
-          previewStyle="vertical"
-          height="600px"
-          initialEditType="wysiwyg"
-          useCommandShortcut={false}
-          onChange={() => {
-            const instance = editorRef.current?.getInstance();
-            if (instance) {
-              setValue("content", instance.getMarkdown());
-            }
-          }}
-          hooks={{
-            addImageBlobHook: async (
-              blob: File,
-              callback: (url: string, altText: string) => void
-            ) => {
-              console.log("blob :", blob);
-              console.log("cablback :", callback);
-              // 압축 옵션을 설정해보자.
-              const compressionOption = {
-                maxSizeMB: 2,
-                maxWidthOrHeight: 1024,
-                useWebWorker: true,
-              };
-              // 이미지를 압축해보자.
-              const compressedBlob = await imageCompression(
-                blob,
-                compressionOption
-              );
-              const tempSrc = URL.createObjectURL(compressedBlob);
-              callback(tempSrc, compressedBlob.name);
-            },
-          }}
-        /> */}
       </form>
     </div>
   );

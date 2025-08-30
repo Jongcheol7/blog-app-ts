@@ -12,21 +12,17 @@ import TextAlign from "@tiptap/extension-text-align";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import NoteToolbar from "./NoteToolbar";
+import imageCompression from "browser-image-compression";
 //import NoteToolbar from "./NoteToolbar";
 
-export default function Editor({ setEditor, content }) {
-  // 혹시 번들러 interop 영향 받는 경우를 대비한 안전 래퍼
-  const Purify: any = (DOMPurify as any).sanitize
-    ? (DOMPurify as any)
-    : (DOMPurify as any).default;
-
-  const safeHTML = Purify.sanitize(content); // content 안에 <img src="data:..." />가 포함됨
-  const prevImgsRef = useRef([]);
+export default function Editor({ setEditor, content, readOnly }: EditorType) {
+  const safeHTML = DOMPurify.sanitize(content); // content 안에 <img src="data:..." />가 포함됨
+  const prevImgsRef = useRef<string[]>([]);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        history: false, // ✅ undo/redo 자체를 끔
+        //history: false, // ✅ undo/redo 자체를 끔
       }),
       Placeholder.configure({
         placeholder: "여기에 메모를 입력하세요...",
@@ -48,9 +44,9 @@ export default function Editor({ setEditor, content }) {
     ],
     immediatelyRender: false,
     content: "", // ❌ 초기화 때는 비우고 useEffect에서 setContent 사용
-    //editable: menu !== "community",
+    editable: !readOnly,
     autofocus: false,
-    onUpdate({ editor }) {
+    async onUpdate({ editor }) {
       const html = editor.getHTML();
       console.log("이미지 삭제 실행됨 : ", html);
       const currentImgs = [
@@ -62,15 +58,17 @@ export default function Editor({ setEditor, content }) {
       const deletedImgs = prevImgsRef.current.filter(
         (src) => !currentImgs.includes(src)
       );
+      // 추가된 이미지를 판별하자.
+      const addedImgs = currentImgs.filter(
+        (src) => !prevImgsRef.current.includes(src)
+      );
+
       console.log("deletedImgs :", deletedImgs);
       // 3. 삭제된 이미지가 CloudFront라면 S3 삭제 요청
-      deletedImgs.forEach((src) => {
-        console.log("src : ", src);
-        console.log(
-          "process.env.CLOUDFRONT_DOMAIN_NAME : ",
-          process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN_NAME
-        );
-        if (src.startsWith(process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN_NAME)) {
+      deletedImgs.forEach((src: string) => {
+        if (
+          src.startsWith(process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN_NAME ?? "")
+        ) {
           console.log("이미지 삭제 route 넘기기전");
           fetch("/api/notes/image", {
             method: "POST",
@@ -82,6 +80,46 @@ export default function Editor({ setEditor, content }) {
 
       // 4. 현재 이미지 리스트를 저장
       prevImgsRef.current = currentImgs;
+
+      // 새로 들어온 base64 이미지만 압축
+      for (let i = 0; i < addedImgs.length; i++) {
+        if (
+          addedImgs[i].startsWith("data:") &&
+          !addedImgs[i].includes("compressed")
+        ) {
+          try {
+            // addedImgs[i] : base64
+            // base64 -> base -> file (압축을 위해)
+            const res = await fetch(addedImgs[i]);
+            const blob = await res.blob();
+            const file = new File([blob], `image${i}.jpeg`, {
+              type: blob.type,
+            });
+            // 압축 옵션
+            const compressionOption = {
+              maxSizeMB: 2,
+              maxWidthOrHeight: 1024,
+              useWebWorker: true,
+            };
+            const compressed = await imageCompression(file, compressionOption);
+            // File -> base64 문자열로 다시 바꾸기.
+            const compressedUrl = URL.createObjectURL(compressed);
+            const newHtml = html.replace(
+              addedImgs[i],
+              `${compressedUrl}" data-compressed="true`
+            );
+            editor.commands.setContent(newHtml, { emitUpdate: false });
+
+            const replacedImgs = [
+              ...newHtml.matchAll(/<img[^>]+src="([^"]+)"[^>]*>/g),
+            ].map((m) => m[1]);
+            prevImgsRef.current = replacedImgs;
+          } catch (err) {
+            console.error("이미지 압축 실패 :", err);
+            toast.error("이미지 압축 중 오류가 발생했습니다.");
+          }
+        }
+      }
     },
   });
 
@@ -105,7 +143,9 @@ export default function Editor({ setEditor, content }) {
     <div>
       <EditorContent
         editor={editor}
-        className={`tiptap h-[300px] w-full overflow-y-auto scrollbar-none`}
+        className={`tiptap w-full overflow-y-auto scrollbar-none ${
+          readOnly ? "h-full" : "h-[300px]"
+        }`}
         onKeyDown={(e) => {
           if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "y")) {
             e.preventDefault();
@@ -113,9 +153,11 @@ export default function Editor({ setEditor, content }) {
           }
         }}
       />
-      <div className="">
-        <NoteToolbar editor={editor} />
-      </div>
+      {!readOnly && (
+        <div className="">
+          <NoteToolbar editor={editor} />
+        </div>
+      )}
     </div>
   );
 }

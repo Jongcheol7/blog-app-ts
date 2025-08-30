@@ -22,6 +22,7 @@ export default function BlogCard({ blog }: Props) {
             alt={blog.title}
             fill
             priority
+            loader={({ src }) => src}
           />
         </div>
         <div className="flex flex-col gap-1 p-3 absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/50 text-gray-300 transition-all">

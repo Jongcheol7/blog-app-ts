@@ -6,11 +6,11 @@ type FormData = {
   content: string;
 };
 type Prop = {
-  postId: number;
+  id: number;
   parentId?: number | null;
 };
 
-export default function CommentForm({ postId, parentId = null }: Prop) {
+export default function CommentForm({ id, parentId = null }: Prop) {
   const { register, handleSubmit, setValue } = useForm<FormData>();
   const {
     mutate: saveCommentMutate,
@@ -20,7 +20,7 @@ export default function CommentForm({ postId, parentId = null }: Prop) {
 
   const onSubmit = (data: FormData) => {
     saveCommentMutate({
-      postId: postId,
+      id,
       content: data.content,
       parentId: parentId,
     });

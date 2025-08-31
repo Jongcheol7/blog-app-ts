@@ -57,7 +57,7 @@ export default function BlogDetails({ id }: { id: string }) {
               readOnly={true}
             />
           </div>
-          <CommentForm postId={data.details.id} />
+          <CommentForm id={data.details.id} />
         </div>
       )}
     </>

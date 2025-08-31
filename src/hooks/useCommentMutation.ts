@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 type CommentProp = {
-  postId: number;
+  id: number;
   content: string;
   parentId?: number | null;
 };
@@ -11,9 +11,9 @@ type CommentProp = {
 export function useCommentMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ postId, content, parentId = null }: CommentProp) => {
-      const res = await axios.post("/api/post/comment", {
-        postId,
+    mutationFn: async ({ id, content, parentId = null }: CommentProp) => {
+      const res = await axios.post("/api/blog/comment", {
+        id,
         content,
         parentId,
       });
@@ -23,7 +23,7 @@ export function useCommentMutation() {
       if (data.success) {
         toast.success("댓글 저장완료");
         queryClient.invalidateQueries({
-          queryKey: ["commentLists", variables.postId],
+          queryKey: ["commentLists", variables.id],
         });
       }
     },

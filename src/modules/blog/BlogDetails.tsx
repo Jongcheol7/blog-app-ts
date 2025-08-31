@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Editor from "../common/Editor";
 import { useState } from "react";
+import CommentForm from "../common/CommentForm";
 
 export default function BlogDetails({ id }: { id: string }) {
   const { data } = useBlogDetails(Number(id));
@@ -56,6 +57,7 @@ export default function BlogDetails({ id }: { id: string }) {
               readOnly={true}
             />
           </div>
+          <CommentForm postId={data.details.id} />
         </div>
       )}
     </>

@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import SessionProvider from "@/components/common/SessionProvider";
 import ReactQueryProvider from "@/components/common/ReactQueryProvider";
 import Header from "@/modules/common/Header";
+import CategoryNav from "@/modules/common/CategoryNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
         <SessionProvider>
           <ReactQueryProvider>
             <Header />
+            <CategoryNav />
             {children}
             <Toaster position="bottom-center" richColors />
           </ReactQueryProvider>

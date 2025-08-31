@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     console.error("글 내용이 없습니다.");
     return NextResponse.json({ error: "글 내용이 없습니다." }, { status: 400 });
   }
-  if (!category || category.trim().length === 0) {
+  if (category === "") {
     console.error("카테고리가 없습니다.");
     return NextResponse.json(
       { error: "카테고리가 없습니다." },

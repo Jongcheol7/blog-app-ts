@@ -1,5 +1,5 @@
-import BlogWriteForm from "@/modules/blog/BlogWriteForm";
+import BlogForm from "@/modules/blog/BlogForm";
 
 export default function Page() {
-  return <BlogWriteForm />;
+  return <BlogForm id="0" />;
 }

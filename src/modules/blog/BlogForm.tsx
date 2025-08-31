@@ -13,7 +13,7 @@ import Editor from "../common/Editor";
 import { useBlogDetails } from "@/hooks/useBlogDetails";
 import type { Editor as TiptapEditor } from "@tiptap/react";
 
-export default function BlogWriteForm({ id }: { id: string }) {
+export default function BlogForm({ id }: { id: string }) {
   const [editor, setEditor] = useState<TiptapEditor | null>(null);
   const [category, setCategory] = useState("");
   const [pickedImage, setPickedImage] = useState<File | null | string>(null);
@@ -35,11 +35,10 @@ export default function BlogWriteForm({ id }: { id: string }) {
   watch("tags");
 
   useEffect(() => {
-    setValue("category", category);
-  }, [category, setValue]);
-
-  useEffect(() => {
+    console.log("로딩시 data :", data);
     if (!data) return;
+    setPickedImage(data.details.imageUrl);
+    setCategory(data.details.categoryId);
     reset({
       id: data.details.id ?? 0,
       title: data.details.title ?? "",
@@ -87,13 +86,13 @@ export default function BlogWriteForm({ id }: { id: string }) {
       toast.error("글 제목이 없습니다.");
       return false;
     }
-    if (!getValues("category") || getValues("category").trim().length === 0) {
+    if (category === "") {
       toast.error("글 카테고리가 없습니다.");
       return false;
     }
 
     data.title = getValues("title");
-    data.category = getValues("category");
+    data.category = category;
     console.log("data : ", data);
 
     const html = editor?.getHTML();
@@ -105,9 +104,12 @@ export default function BlogWriteForm({ id }: { id: string }) {
     // 썸네일을 S3에 넣는 작업 해보자.
     // presigned URL 요청 + S3 업로드
     if (pickedImage) {
-      const fileUrl = await UploadToS3(pickedImage as File, "thumbnail");
-      if (!fileUrl) return false;
-      data.imageUrl = fileUrl;
+      if (typeof pickedImage === "object") {
+        console.log("pickedImage : ", pickedImage);
+        const fileUrl = await UploadToS3(pickedImage as File, "thumbnail");
+        if (!fileUrl) return false;
+        data.imageUrl = fileUrl;
+      }
     } else {
       toast.error("썸네일은 필수입니다.");
       return false;
@@ -136,6 +138,7 @@ export default function BlogWriteForm({ id }: { id: string }) {
       const file = new File([blobData], "image.jpg", { type: blobData.type });
 
       // presigned URL 요청 + S3 업로드
+      console.log("file : ", file);
       const fileUrl = await UploadToS3(file, "content");
       if (!fileUrl) return false;
 
@@ -144,6 +147,7 @@ export default function BlogWriteForm({ id }: { id: string }) {
       uploadHtml = uploadHtml.replace(fullTag, replaceTag);
     }
 
+    console.log("저장전 data : ", data);
     // 노트 저장.
     saveMutation({
       ...data,
@@ -157,7 +161,7 @@ export default function BlogWriteForm({ id }: { id: string }) {
         <div className="flex justify-between">
           <div className="flex flex-1">
             <CategoryMain
-              category={category}
+              category={category ?? data?.details.categoryId}
               setCategory={setCategory}
               readYn={false}
             />

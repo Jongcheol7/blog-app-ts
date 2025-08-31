@@ -17,6 +17,8 @@ export default function CategoryMain({ category, setCategory, readYn }: Props) {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const { data } = useCategoryLists();
 
+  console.log("카테고리메인 category :", category);
+
   const handleCategory = (val: string) => {
     console.log("핸들카테고리 실행됨 : ", val);
     if (val === "-1") {

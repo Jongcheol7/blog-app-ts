@@ -48,7 +48,6 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
     autofocus: false,
     async onUpdate({ editor }) {
       const html = editor.getHTML();
-      console.log("이미지 삭제 실행됨 : ", html);
       const currentImgs = [
         ...html.matchAll(/<img[^>]+src="([^"]+)"[^>]*>/g),
       ].map((m) => m[1]);
@@ -69,7 +68,6 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
         if (
           src.startsWith(process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN_NAME ?? "")
         ) {
-          console.log("이미지 삭제 route 넘기기전");
           fetch("/api/notes/image", {
             method: "POST",
             body: JSON.stringify({ imageUrl: src }),

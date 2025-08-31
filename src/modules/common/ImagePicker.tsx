@@ -12,6 +12,7 @@ type Props = {
 };
 
 export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
+  console.log("pickedImage : ", pickedImage);
   const onDrop = useCallback(
     async (files: File[]) => {
       debugger;
@@ -30,6 +31,8 @@ export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
           headers: { "Content-Type": "application/json" },
         });
       }
+
+      console.log("file : ", files);
 
       if (files.length > 1) {
         toast.error("사진은 한장만 첨부 가능합니다.");

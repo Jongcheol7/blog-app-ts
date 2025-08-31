@@ -16,7 +16,7 @@ import type { Editor as TiptapEditor } from "@tiptap/react";
 export default function BlogWriteForm({ id }: { id: string }) {
   const [editor, setEditor] = useState<TiptapEditor | null>(null);
   const [category, setCategory] = useState("");
-  const [pickedImage, setPickedImage] = useState<File | null>(null);
+  const [pickedImage, setPickedImage] = useState<File | null | string>(null);
   const { data } = useBlogDetails(Number(id));
   const { mutate: saveMutation, isPending: savingPending } =
     useBlogWriteMutation();
@@ -105,9 +105,9 @@ export default function BlogWriteForm({ id }: { id: string }) {
     // 썸네일을 S3에 넣는 작업 해보자.
     // presigned URL 요청 + S3 업로드
     if (pickedImage) {
-      const fileUrl = await UploadToS3(pickedImage, "thumbnail");
+      const fileUrl = await UploadToS3(pickedImage as File, "thumbnail");
       if (!fileUrl) return false;
-      setValue("imageUrl", fileUrl);
+      data.imageUrl = fileUrl;
     } else {
       toast.error("썸네일은 필수입니다.");
       return false;

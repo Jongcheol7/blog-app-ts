@@ -128,7 +128,9 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
       setEditor(editor);
 
       // ✅ content 안의 base64 <img>를 커스텀 노드로 처리
-      editor.commands.setContent(safeHTML);
+      Promise.resolve().then(() => {
+        editor.commands.setContent(safeHTML);
+      });
       //editor.commands.setColor("#ff0000");
       const initImgs = [
         ...safeHTML.matchAll(/src="([^"]+\.(jpeg|jpg|png|webp|gif))"/gi),

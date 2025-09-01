@@ -9,17 +9,17 @@ type Comment = {
   id: number;
   content: string;
   createdAt: string;
-  postId: number;
+  blogId: number;
   likes: [
     {
       id: number;
       userId: string;
-      postId: number;
+      blogId: number;
     }
   ];
   user: {
     id: number;
-    username: string;
+    name: string;
     imageUrl: string;
   };
   parentId: number | null;
@@ -29,17 +29,17 @@ type Props = {
   comment: Comment;
   replies: Comment[];
   depth: number;
-  postId: number;
+  blogId: number;
 };
 export default function CommentItem({
   comment,
   replies,
   depth = 0,
-  postId,
+  blogId,
 }: Props) {
   const [showReply, setShowReply] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
-  const { mutate, isPending } = useCommentLikeMutation(comment.postId);
+  const { mutate, isPending } = useCommentLikeMutation(comment.blogId);
 
   //특정 부모에 대한 대댓글 필터링 해보자.
   const getReplies = (id: number) => {
@@ -48,7 +48,7 @@ export default function CommentItem({
   const nextDepth = depth + 1;
   const maxDepth = 3;
 
-  console.log("ddd : ", comment);
+  console.log("CommentItem comment: ", comment);
 
   return (
     <div
@@ -58,7 +58,8 @@ export default function CommentItem({
       {/* 본댓글 */}
       <div className="flex gap-2">
         <Image
-          src={comment.user.imageUrl}
+          //src={comment.user.imageUrl}
+          src={""}
           width={30}
           height={30}
           alt="프로필사진"
@@ -67,25 +68,12 @@ export default function CommentItem({
         <div className="flex-1">
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold">{comment.user.username}</p>
+              <p className="text-sm font-semibold">{comment.user.name}</p>
               <p className="text-[11px]">{comment.createdAt}</p>
             </div>
             <p className="text-sm">{comment.content}</p>
           </div>
           <div className="flex gap-2">
-            <div className="flex items-center ">
-              <Heart
-                className={`w-4 cursor-pointer hover:text-rose-500 transition ${
-                  isPending ? "disabled" : ""
-                }`}
-                onClick={() => {
-                  mutate(comment.id);
-                }}
-              />
-              <p className="text-[12px] text-gray-800">
-                {comment.likes.length}개
-              </p>
-            </div>
             <div className="flex items-center ">
               <MessageCircle className="w-4 cursor-pointer hover:text-blue-500 transition" />
               <p className="text-[12px] text-gray-800 flex gap-2">
@@ -110,9 +98,7 @@ export default function CommentItem({
               </p>
             </div>
           </div>
-          {showCommentForm && (
-            <CommentForm postId={postId} parentId={comment.id} />
-          )}
+          {showCommentForm && <CommentForm id={blogId} parentId={comment.id} />}
         </div>
       </div>
 
@@ -126,7 +112,7 @@ export default function CommentItem({
               comment={reply}
               replies={replies} // 여기도 전체 댓글 넘겨야 함
               depth={nextDepth}
-              postId={postId}
+              blogId={blogId}
             />
           ))}
         </div>

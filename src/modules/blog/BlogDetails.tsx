@@ -7,12 +7,13 @@ import { useRouter } from "next/navigation";
 import Editor from "../common/Editor";
 import { useState } from "react";
 import CommentForm from "../common/CommentForm";
+import CommentLists from "../common/CommentLists";
 
 export default function BlogDetails({ id }: { id: string }) {
   const { data } = useBlogDetails(Number(id));
   const [editor, setEditor] = useState(null);
   const router = useRouter();
-
+  console.log("BlogDetails 의 data : ", data);
   return (
     <>
       {data && (
@@ -58,6 +59,7 @@ export default function BlogDetails({ id }: { id: string }) {
             />
           </div>
           <CommentForm id={data.details.id} />
+          <CommentLists id={data.details.id} />
         </div>
       )}
     </>

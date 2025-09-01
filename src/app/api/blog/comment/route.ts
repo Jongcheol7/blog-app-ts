@@ -50,3 +50,44 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = Number(searchParams.get("id"));
+  const cursor = searchParams.get("cursor");
+  const limit = Number(searchParams.get("limit") || 10);
+  console.log("댓글조회 id : ", id);
+  console.log("댓글조회 cursor : ", cursor);
+  console.log("댓글조회 limit : ", limit);
+
+  if (!id) {
+    console.error("댓글 조회에서 id 가 없습니다.");
+    return NextResponse.json(
+      { error: "댓글 조회에서 id 가 없습니다." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const comments = await prisma.comment.findMany({
+      where: {
+        blogId: id,
+      },
+      include: {
+        user: true,
+      },
+      take: limit,
+      cursor: cursor ? { id: Number(cursor) } : undefined,
+      skip: cursor ? 1 : 0,
+    });
+    const nextCursor =
+      comments.length > 0 ? comments[comments.length - 1].id : null;
+    return NextResponse.json({ comments: comments, nextCursor: nextCursor });
+  } catch (err) {
+    console.error("댓글 조회에 실패했습니다.", err);
+    return NextResponse.json(
+      { error: "댓글 조회에 실패했습니다." },
+      { status: 500 }
+    );
+  }
+}

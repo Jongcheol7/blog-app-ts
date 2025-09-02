@@ -1,6 +1,5 @@
-import { useCommentLikeMutation } from "@/hooks/useCommentLikeMutation";
 import CommentForm from "./CommentForm";
-import { Heart, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -20,7 +19,7 @@ type Comment = {
   user: {
     id: number;
     name: string;
-    imageUrl: string;
+    image: string;
   };
   parentId: number | null;
 };
@@ -39,7 +38,6 @@ export default function CommentItem({
 }: Props) {
   const [showReply, setShowReply] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
-  const { mutate, isPending } = useCommentLikeMutation(comment.blogId);
 
   //특정 부모에 대한 대댓글 필터링 해보자.
   const getReplies = (id: number) => {
@@ -58,8 +56,8 @@ export default function CommentItem({
       {/* 본댓글 */}
       <div className="flex gap-2">
         <Image
-          //src={comment.user.imageUrl}
-          src={""}
+          src={comment.user.image}
+          //src={""}
           width={30}
           height={30}
           alt="프로필사진"
@@ -76,7 +74,7 @@ export default function CommentItem({
           <div className="flex gap-2">
             <div className="flex items-center ">
               <MessageCircle className="w-4 cursor-pointer hover:text-blue-500 transition" />
-              <p className="text-[12px] text-gray-800 flex gap-2">
+              <p className="text-[12px] text-gray-800 flex gap-2 ml-1">
                 {getReplies(comment.id).length}
                 {"개 "}
                 {getReplies(comment.id).length > 0 ? (
@@ -89,6 +87,7 @@ export default function CommentItem({
                   ""
                 )}
                 <span
+                  className="cursor-pointer"
                   onClick={() => {
                     setShowCommentForm(!showCommentForm);
                   }}
@@ -98,7 +97,9 @@ export default function CommentItem({
               </p>
             </div>
           </div>
-          {showCommentForm && <CommentForm id={blogId} parentId={comment.id} />}
+          {showCommentForm && (
+            <CommentForm blogId={blogId} parentId={comment.id} />
+          )}
         </div>
       </div>
 

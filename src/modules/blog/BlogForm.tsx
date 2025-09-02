@@ -36,7 +36,7 @@ export default function BlogForm({ id }: { id: string }) {
 
   useEffect(() => {
     console.log("로딩시 data :", data);
-    if (!data) return;
+    if (!data?.details) return;
     setPickedImage(data.details.imageUrl);
     setCategory(data.details.categoryId);
     reset({
@@ -155,13 +155,14 @@ export default function BlogForm({ id }: { id: string }) {
     });
   };
 
+  //if (!data?.details) return <div>Loading ... </div>;
   return (
     <div className="p-5">
       <form className=" flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex justify-between">
           <div className="flex flex-1">
             <CategoryMain
-              category={category ?? data?.details.categoryId}
+              category={category ?? data.details.categoryId}
               setCategory={setCategory}
               readYn={false}
             />
@@ -180,7 +181,11 @@ export default function BlogForm({ id }: { id: string }) {
             {savingPending ? "저장중" : "저장"}
           </Button>
         </div>
-        <Input placeholder="제목을 입력하세요" {...register("title")} />
+        <input
+          className="border-none shadow-none font-bold h-10 text-2xl rounded-xl px-1"
+          placeholder="제목을 입력하세요"
+          {...register("title")}
+        />
 
         {/* 썸네일 */}
         <ImagePicker
@@ -216,7 +221,7 @@ export default function BlogForm({ id }: { id: string }) {
         >
           <Editor
             setEditor={setEditor}
-            content={data?.details.content}
+            content={data?.details?.content ?? ""}
             readOnly={false}
           />
         </div>

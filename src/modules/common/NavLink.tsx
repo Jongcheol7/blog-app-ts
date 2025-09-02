@@ -1,5 +1,7 @@
+import { useFromStore } from "@/store/useFromStore";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 type Props = {
   href: string;
@@ -7,7 +9,12 @@ type Props = {
 };
 
 export default function NavLink({ href, children }: Props) {
+  const { setFrom } = useFromStore();
   const path = usePathname();
+  useEffect(() => {
+    setFrom(path);
+  }, [path, setFrom]);
+
   return (
     <Link
       href={href}

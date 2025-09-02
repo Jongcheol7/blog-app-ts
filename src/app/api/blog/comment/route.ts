@@ -4,14 +4,14 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const { id, content, parentId } = await request.json();
-  console.log("댓글저장 id :", id);
+  const { blogId, content, parentId } = await request.json();
+  console.log("댓글저장 blogId :", blogId);
   console.log("댓글저장 content :", content);
   console.log("댓글저장 parentId :", parentId);
-  if (!id) {
-    console.error("Comment 저장시 id를 찾을수 없습니다.");
+  if (!blogId) {
+    console.error("Comment 저장시 blogId 찾을수 없습니다.");
     return NextResponse.json(
-      { error: "Comment 저장시 id를 찾을수 없습니다." },
+      { error: "Comment 저장시 blogId 찾을수 없습니다." },
       { status: 400 }
     );
   }
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     await prisma.comment.create({
       data: {
         userId: session.user.id,
-        blogId: id,
+        blogId,
         content: content.trim(),
         parentId: parentId || null,
       },
@@ -53,17 +53,17 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const id = Number(searchParams.get("id"));
+  const blogId = Number(searchParams.get("blogId"));
   const cursor = searchParams.get("cursor");
   const limit = Number(searchParams.get("limit") || 10);
-  console.log("댓글조회 id : ", id);
+  console.log("댓글조회 blogId : ", blogId);
   console.log("댓글조회 cursor : ", cursor);
   console.log("댓글조회 limit : ", limit);
 
-  if (!id) {
-    console.error("댓글 조회에서 id 가 없습니다.");
+  if (!blogId) {
+    console.error("댓글 조회에서 blogId 가 없습니다.");
     return NextResponse.json(
-      { error: "댓글 조회에서 id 가 없습니다." },
+      { error: "댓글 조회에서 blogId 가 없습니다." },
       { status: 400 }
     );
   }
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
   try {
     const comments = await prisma.comment.findMany({
       where: {
-        blogId: id,
+        blogId,
       },
       include: {
         user: true,

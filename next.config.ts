@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "image.mux.com",
       },
     ], // ✅ 외부 이미지 허용 도메인

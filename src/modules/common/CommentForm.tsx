@@ -1,3 +1,4 @@
+"use client";
 import { Textarea } from "@/components/ui/textarea";
 import { useCommentMutation } from "@/hooks/useCommentMutation";
 import { useForm } from "react-hook-form";
@@ -6,11 +7,11 @@ type FormData = {
   content: string;
 };
 type Prop = {
-  id: number;
+  blogId: number;
   parentId?: number | null;
 };
 
-export default function CommentForm({ id, parentId = null }: Prop) {
+export default function CommentForm({ blogId, parentId = null }: Prop) {
   const { register, handleSubmit, setValue } = useForm<FormData>();
   const {
     mutate: saveCommentMutate,
@@ -20,7 +21,7 @@ export default function CommentForm({ id, parentId = null }: Prop) {
 
   const onSubmit = (data: FormData) => {
     saveCommentMutate({
-      id,
+      blogId,
       content: data.content,
       parentId: parentId,
     });

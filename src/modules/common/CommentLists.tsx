@@ -3,7 +3,7 @@ import CommentItem from "./CommentItem";
 import { useCommentLists } from "@/hooks/useCommentLists";
 
 type Props = {
-  id: number;
+  blogId: number;
 };
 
 type Comment = {
@@ -18,8 +18,8 @@ type Comment = {
   parentId: number | null;
 };
 
-export default function CommentLists({ id }: Props) {
-  const { data } = useCommentLists(id);
+export default function CommentLists({ blogId }: Props) {
+  const { data } = useCommentLists(blogId);
 
   console.log("PostCommentLists. data : ", data);
 
@@ -43,7 +43,7 @@ export default function CommentLists({ id }: Props) {
           comment={comment}
           replies={allComments ?? []}
           depth={0}
-          blogId={id}
+          blogId={blogId}
         />
       ))}
     </div>

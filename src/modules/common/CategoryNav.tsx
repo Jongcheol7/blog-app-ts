@@ -1,5 +1,6 @@
 "use client";
 import { useCategoryLists } from "@/hooks/useCategoryLists";
+import { useFromStore } from "@/store/useFromStore";
 import { useState } from "react";
 
 type CategoryType = {
@@ -10,6 +11,13 @@ type CategoryType = {
 export default function CategoryNav() {
   const { data } = useCategoryLists();
   const [selectedCategory, setSelectedCategory] = useState("전체");
+  const { from } = useFromStore();
+
+  if (from === "/guestbook") {
+    console.log("방명록 진입.. ");
+    return;
+  }
+  console.log("from : ", from);
   console.log("카테고리네브 data :", data);
   return (
     <div className="flex gap-2 mb-2">

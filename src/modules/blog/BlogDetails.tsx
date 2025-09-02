@@ -44,8 +44,8 @@ export default function BlogDetails({ id }: { id: string }) {
               수정
             </Button>
           </div>
-          <Input
-            className="border-none shadow-none font-bold"
+          <input
+            className="border-none shadow-none font-bold h-10 text-2xl rounded-xl px-1"
             placeholder="제목을 입력하세요"
             value={data.details.title}
             readOnly
@@ -58,8 +58,8 @@ export default function BlogDetails({ id }: { id: string }) {
               readOnly={true}
             />
           </div>
-          <CommentForm id={data.details.id} />
-          <CommentLists id={data.details.id} />
+          <CommentForm blogId={data.details.id} />
+          <CommentLists blogId={data.details.id} />
         </div>
       )}
     </>

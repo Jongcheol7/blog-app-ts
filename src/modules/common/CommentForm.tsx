@@ -1,6 +1,7 @@
 "use client";
 import { Textarea } from "@/components/ui/textarea";
 import { useCommentMutation } from "@/hooks/useCommentMutation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 type FormData = {
@@ -27,9 +28,11 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
     });
   };
 
-  if (isSuccess) {
-    setValue("content", "");
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      setValue("content", "");
+    }
+  }, [isSuccess, setValue]);
 
   return (
     <div className="mt-3">

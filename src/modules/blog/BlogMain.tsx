@@ -29,16 +29,16 @@ export default function BlogMain() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        const [entry] = entries;
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
           fetchNextPage();
         }
       },
-      { threshold: 1.0 }
+      { root: null, rootMargin: "200px", threshold: 0 }
     );
     const target = observerRef.current;
     if (target) observer.observe(target);
     return () => {
-      if (target) observer.unobserve(target);
       observer.disconnect();
     };
   }, [hasNextPage, fetchNextPage, isFetchingNextPage]);

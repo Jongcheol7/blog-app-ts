@@ -5,7 +5,7 @@ export function useGuestbookLists() {
   return useInfiniteQuery({
     queryKey: ["guestbookLists"],
     queryFn: async ({ pageParam = null }) => {
-      const res = await axios.get("/api/guestboog", {
+      const res = await axios.get("/api/guestbook", {
         params: { cursor: pageParam, limit: 10 },
       });
       return res.data;

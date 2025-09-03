@@ -5,5 +5,8 @@ export function TimeTransform(time: string) {
   const koreaTime = new Date(time).toLocaleTimeString("ko-KR", {
     timeZone: "Asia/Seoul",
   });
-  return { date: koreaDate, time: koreaTime };
+  const koreanDateTime = new Date(time).toLocaleString("ko-KR", {
+    hour12: false,
+  });
+  return { date: koreaDate, time: koreaTime, datetime: koreanDateTime };
 }

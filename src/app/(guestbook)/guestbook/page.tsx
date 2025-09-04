@@ -1,4 +1,4 @@
-import GuestbookMain from "@/modules/Guestbook.tsx/GuestbookMain";
+import GuestbookMain from "@/modules/Guestbook/GuestbookMain";
 
 export default function Page() {
   return <GuestbookMain />;

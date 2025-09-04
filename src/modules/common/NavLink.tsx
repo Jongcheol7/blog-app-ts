@@ -11,6 +11,7 @@ type Props = {
 export default function NavLink({ href, children }: Props) {
   const { setFrom } = useFromStore();
   const path = usePathname();
+  console.log("navlink path : ", path);
   useEffect(() => {
     setFrom(path);
   }, [path, setFrom]);

@@ -5,11 +5,14 @@ import NavLink from "./NavLink";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useMobileStore } from "@/store/useMobileStore";
 import { LogIn, LogOut } from "lucide-react";
+import { useFromStore } from "@/store/useFromStore";
+import { Input } from "@/components/ui/input";
 
 export default function Header() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isMobile, setIsMobile } = useMobileStore();
+  const { setFrom } = useFromStore();
 
   // 창크기에 따른 인기글 보여주는 갯수 조절하기.
   useEffect(() => {
@@ -31,21 +34,31 @@ export default function Header() {
 
   return (
     <header
-      className={`flex items-center  px-6 py-4 pb-10 ${
+      className={`flex items-center  px-1 py-4 pb-10 ${
         isMobile ? "justify-center" : "justify-between"
       }`}
     >
-      <Link
-        href={"/"}
-        className={`transition duration-700 ${isMenuOpen ? "hidden" : ""}`}
-      >
-        {/* <Image src="/logo2.png" width={70} height={70} alt="Logo" priority /> */}
-        <p className="text-2xl font-bold">종철.log</p>
-      </Link>
+      <NavLink href={"/"}>
+        <p className="text-3xl font-bold">Jongcheol Lee</p>
+      </NavLink>
+
+      <div className="flex gap-1">
+        <Input
+          className="w-[200px]"
+          type="text"
+          placeholder="검색어를 입력하세요"
+        />
+        <Link
+          href={"/write"}
+          className="bg-gray-400 hover:bg-gray-600 transition-all text-gray-100 px-2 py-1 rounded-md text-center"
+        >
+          새글추가
+        </Link>
+      </div>
 
       {!isMobile && (
         <nav className="flex gap-4 items-center">
-          <ul className="flex gap-8 text-lg font-semibold">
+          <ul className="flex gap-5 text-lg font-semibold">
             {isUser && (
               <li>
                 <p>

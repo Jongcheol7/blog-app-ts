@@ -12,8 +12,8 @@ export default function CategoryNav() {
   const { data } = useCategoryLists();
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const { from } = useFromStore();
-
-  if (from === "/guestbook") {
+  console.log("categoryNav from :", from);
+  if (from === "/guestbook" || from === "/about") {
     console.log("방명록 진입.. ");
     return;
   }

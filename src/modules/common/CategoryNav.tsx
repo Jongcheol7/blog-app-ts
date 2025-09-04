@@ -20,7 +20,7 @@ export default function CategoryNav() {
   console.log("from : ", from);
   console.log("카테고리네브 data :", data);
   return (
-    <div className="flex gap-2 mb-2">
+    <div className="flex gap-2 pb-3 border-b">
       <button
         className={`py-2 px-2 bg-gray-200 font-bold rounded-sm hover:bg-green-600 ${
           selectedCategory === "전체" ? "bg-green-600" : "bg-gray-200"

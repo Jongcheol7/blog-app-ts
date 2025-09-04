@@ -43,22 +43,18 @@ export default function Header() {
       </NavLink>
 
       <div className="flex gap-1">
-        <Input
-          className="w-[200px]"
-          type="text"
-          placeholder="검색어를 입력하세요"
-        />
+        <Input className="w-[200px]" type="text" placeholder="Search" />
         <Link
           href={"/write"}
           className="bg-gray-400 hover:bg-gray-600 transition-all text-gray-100 px-2 py-1 rounded-md text-center"
         >
-          새글추가
+          Write
         </Link>
       </div>
 
       {!isMobile && (
         <nav className="flex gap-4 items-center">
-          <ul className="flex gap-5 text-lg font-semibold">
+          <ul className="flex items-center gap-5 text-lg font-semibold">
             {isUser && (
               <li>
                 <p>
@@ -87,7 +83,7 @@ export default function Header() {
 
             {/* 로그아웃시 서버에서는 잘 로그아웃이 되지만 클라이언트에서는 그걸 감지하지 못함
           따라서 Link 가 아닌 button 으로 강제적으로 리다이렉션 시켜줌. */}
-            <li>
+            <li className="mt-2">
               <button
                 onClick={async () => {
                   if (session?.user) {
@@ -96,15 +92,15 @@ export default function Header() {
                     await signIn();
                   }
                 }}
-                className="text-left w-fit hover:text-blue-800 transition duration-300"
+                className="hover:text-blue-800 transition duration-300"
               >
                 {session ? (
-                  <div className="flex gap-2">
+                  <div className="flex">
                     <LogOut />
                     <span>로그아웃</span>
                   </div>
                 ) : (
-                  <div className="flex gap-2">
+                  <div className="flex">
                     <LogIn />
                     <span>로그인</span>
                   </div>

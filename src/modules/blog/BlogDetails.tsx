@@ -1,7 +1,6 @@
 "use client";
 import { useBlogDetails } from "@/hooks/useBlogDetails";
 import CategoryMain from "./CategoryMain";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Editor from "../common/Editor";
@@ -11,7 +10,7 @@ import CommentLists from "../common/CommentLists";
 
 export default function BlogDetails({ id }: { id: string }) {
   const { data } = useBlogDetails(Number(id));
-  const [editor, setEditor] = useState(null);
+  const [, setEditor] = useState(null);
   const router = useRouter();
   console.log("BlogDetails 의 data : ", data);
   return (

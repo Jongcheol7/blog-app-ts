@@ -5,14 +5,12 @@ import NavLink from "./NavLink";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useMobileStore } from "@/store/useMobileStore";
 import { LogIn, LogOut } from "lucide-react";
-import { useFromStore } from "@/store/useFromStore";
 import { Input } from "@/components/ui/input";
 
 export default function Header() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isMobile, setIsMobile } = useMobileStore();
-  const { setFrom } = useFromStore();
 
   // 창크기에 따른 인기글 보여주는 갯수 조절하기.
   useEffect(() => {

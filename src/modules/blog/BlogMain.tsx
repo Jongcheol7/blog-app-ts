@@ -1,10 +1,8 @@
 "use client";
 import { useBlogLists } from "@/hooks/useBlogLists";
-import Link from "next/link";
 import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import BlogCard from "./BlogCard";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { TimeTransform } from "../common/TimeTransform";
 import DOMPurify from "dompurify";
@@ -20,7 +18,7 @@ export default function BlogMain() {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    refetch,
+    //refetch,
   } = useBlogLists();
 
   const allBlogs = useMemo(() => {

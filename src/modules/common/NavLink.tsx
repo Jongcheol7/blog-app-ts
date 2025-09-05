@@ -19,9 +19,9 @@ export default function NavLink({ href, children }: Props) {
   return (
     <Link
       href={href}
-      className={`${
-        href === path ? "text-green-800" : ""
-      } hover:text-green-800`}
+      className={`text-gray-600 ${
+        href === path ? "font-black text-[25px]" : ""
+      } hover:`}
     >
       {children}
     </Link>

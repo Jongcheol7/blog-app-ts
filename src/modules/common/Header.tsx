@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import NavLink from "./NavLink";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useMobileStore } from "@/store/useMobileStore";
-import { LogIn, LogOut } from "lucide-react";
+import { LogIn, LogOut, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export default function Header() {
@@ -37,17 +37,16 @@ export default function Header() {
       }`}
     >
       <NavLink href={"/"}>
-        <p className="text-3xl font-bold">Jongcheol Lee</p>
+        <p className="text-3xl font-bold text-black">Jongcheol Lee</p>
       </NavLink>
 
-      <div className="flex gap-1">
-        <Input className="w-[200px]" type="text" placeholder="Search" />
-        <Link
-          href={"/write"}
-          className="bg-gray-400 hover:bg-gray-600 transition-all text-gray-100 px-2 py-1 rounded-md text-center"
-        >
-          Write
-        </Link>
+      <div className="w-[250px] relative text-gray-300">
+        <Search className="absolute top-1/2 -translate-y-1/2 left-2" />
+        <Input
+          className="pl-9 text-gray-700 font-bold"
+          type="text"
+          placeholder="Search"
+        />
       </div>
 
       {!isMobile && (
@@ -78,6 +77,11 @@ export default function Header() {
                 <NavLink href="/manager">Manager</NavLink>
               </li>
             )}
+            {isAdmin && (
+              <li>
+                <NavLink href="/Write">Write</NavLink>
+              </li>
+            )}
 
             {/* 로그아웃시 서버에서는 잘 로그아웃이 되지만 클라이언트에서는 그걸 감지하지 못함
           따라서 Link 가 아닌 button 으로 강제적으로 리다이렉션 시켜줌. */}
@@ -90,17 +94,17 @@ export default function Header() {
                     await signIn();
                   }
                 }}
-                className="hover:text-blue-800 transition duration-300"
+                className="text-gray-600 hover:text-blue-800 transition duration-300 cursor-pointer"
               >
                 {session ? (
                   <div className="flex">
                     <LogOut />
-                    <span>로그아웃</span>
+                    <span className="">로그아웃</span>
                   </div>
                 ) : (
                   <div className="flex">
                     <LogIn />
-                    <span>로그인</span>
+                    <span className="">로그인</span>
                   </div>
                 )}
               </button>

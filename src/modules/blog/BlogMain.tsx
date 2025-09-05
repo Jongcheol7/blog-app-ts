@@ -67,6 +67,7 @@ export default function BlogMain() {
                 fill
                 priority
                 loader={({ src }) => src}
+                className="shadow-2xl"
               />
             </div>
             <div className="flex-1 ml-3 flex flex-col">

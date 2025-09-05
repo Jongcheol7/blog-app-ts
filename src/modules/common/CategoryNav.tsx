@@ -12,18 +12,15 @@ export default function CategoryNav() {
   const { data } = useCategoryLists();
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const { from } = useFromStore();
+  console.log("CategoryNav data :", data);
   console.log("categoryNav from :", from);
-  if (from === "/guestbook" || from === "/about") {
-    console.log("방명록 진입.. ");
-    return;
-  }
-  console.log("from : ", from);
-  console.log("카테고리네브 data :", data);
+  console.log("categoryNav selectedCategory :", selectedCategory);
+  if (from === "/guestbook" || from === "/about") return;
   return (
     <div className="flex gap-2 pb-3 border-b">
       <button
-        className={`py-2 px-2 bg-gray-200 font-bold rounded-sm hover:bg-green-600 ${
-          selectedCategory === "전체" ? "bg-green-600" : "bg-gray-200"
+        className={`py-2 px-2 font-bold rounded-sm hover:bg-black hover:text-white ${
+          selectedCategory === "전체" ? "bg-black text-white" : "bg-gray-200"
         }`}
         onClick={() => setSelectedCategory("전체")}
       >
@@ -33,8 +30,10 @@ export default function CategoryNav() {
         data.categoryLists.map((cat: CategoryType) => (
           <button
             key={cat.id}
-            className={`py-2 px-2 bg-gray-200 font-bold rounded-sm hover:bg-green-600 ${
-              selectedCategory === cat.name ? "bg-green-600" : "bg-gray-200"
+            className={`py-2 px-2 font-bold rounded-sm hover:bg-black hover:text-white ${
+              selectedCategory === cat.name
+                ? "bg-black text-white"
+                : "bg-gray-200"
             }`}
             onClick={() => setSelectedCategory(cat.name)}
           >

@@ -52,7 +52,7 @@ export default function Header() {
       {!isMobile && (
         <nav className="flex gap-4 items-center">
           <ul className="flex items-center gap-5 text-lg font-semibold">
-            {isUser && (
+            {/* {isUser && (
               <li>
                 <p>
                   {session?.user.name}
@@ -62,7 +62,7 @@ export default function Header() {
                   님
                 </p>
               </li>
-            )}
+            )} */}
             <li>
               <NavLink href="/blog">Blog</NavLink>
             </li>

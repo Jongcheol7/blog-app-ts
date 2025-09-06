@@ -67,6 +67,7 @@ model Blog {
   views      Int      @default(0)
   privateYn  Boolean 
   categoryId Int? 
+  pinnedYn   Boolean  @default(false)
   createdAt  DateTime @default(now())
   modifiedAt DateTime?
   deletedAt  DateTime?

@@ -6,5 +6,6 @@ type BlogForm = {
   category: string;
   imageUrl: string;
   privateYn: boolean;
+  pinnedYn: boolean;
   createdAt: string;
 };

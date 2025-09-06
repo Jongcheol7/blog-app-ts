@@ -30,6 +30,7 @@ export default function BlogForm({ id }: { id: string }) {
         category: "",
         imageUrl: "",
         privateYn: false,
+        pinnedYn: false,
       },
     });
   watch("tags");
@@ -166,8 +167,8 @@ export default function BlogForm({ id }: { id: string }) {
               setCategory={setCategory}
               readYn={false}
             />
-            <div className="flex items-center ml-5">
-              <label htmlFor="privateYn" className="w-[100px] text-gray-600">
+            <div className="flex items-center ml-5 gap-2">
+              <label htmlFor="privateYn" className=" text-gray-600">
                 비밀글 설정
               </label>
               <input
@@ -175,6 +176,12 @@ export default function BlogForm({ id }: { id: string }) {
                 type="checkbox"
                 {...register("privateYn")}
               />
+            </div>
+            <div className="flex items-center ml-5 gap-2">
+              <label htmlFor="pinnedYn" className="text-gray-600 mr-1">
+                메인고정
+              </label>
+              <input id="pinnedYn" type="checkbox" {...register("pinnedYn")} />
             </div>
           </div>
           <Button type="submit" disabled={savingPending}>

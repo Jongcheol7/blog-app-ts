@@ -13,7 +13,10 @@ export default function BlogCard({ blog }: Props) {
   const router = useRouter();
 
   return (
-    <Card onClick={() => router.push(`details/${blog.id}`)}>
+    <Card
+      className="cursor-pointer"
+      onClick={() => router.push(`details/${blog.id}`)}
+    >
       <CardContent className="group relative">
         <div className="flex relative w-full h-[300px] group-hover:blur-xs">
           <Image

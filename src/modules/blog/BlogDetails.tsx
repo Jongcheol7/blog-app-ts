@@ -16,7 +16,7 @@ export default function BlogDetails({ id }: { id: string }) {
   return (
     <>
       {data && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-3">
           <div className="flex">
             <div className="flex flex-1 items-center">
               <CategoryMain
@@ -24,16 +24,29 @@ export default function BlogDetails({ id }: { id: string }) {
                 setCategory={() => {}}
                 readYn={true}
               />
-              <div className="flex items-center ml-5">
-                <label htmlFor="privateYn" className="w-[100px] text-gray-600">
-                  비밀글 설정
-                </label>
-                <input
-                  id="privateYn"
-                  type="checkbox"
-                  defaultChecked={data.details.privateYn}
-                  readOnly
-                />
+              <div className="flex items-center ml-5 gap-3">
+                <div>
+                  <label htmlFor="privateYn" className="text-gray-600 mr-1">
+                    비밀글 설정
+                  </label>
+                  <input
+                    id="privateYn"
+                    type="checkbox"
+                    defaultChecked={data.details.privateYn}
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label htmlFor="pinnedYn" className="text-gray-600 mr-1">
+                    메인고정
+                  </label>
+                  <input
+                    id="pinnedYn"
+                    type="checkbox"
+                    defaultChecked={data.details.pinnedYn}
+                    disabled
+                  />
+                </div>
               </div>
             </div>
             <Button

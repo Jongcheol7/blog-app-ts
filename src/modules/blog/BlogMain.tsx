@@ -21,6 +21,9 @@ export default function BlogMain() {
     //refetch,
   } = useBlogLists();
 
+  const pinnedData = useMemo(() => {
+    return data?.pages.flatMap((page) => page.pinned) ?? [];
+  }, [data]);
   const allBlogs = useMemo(() => {
     return data?.pages.flatMap((page) => page.result) ?? [];
   }, [data]);
@@ -51,51 +54,46 @@ export default function BlogMain() {
     toast.error(`에러 발생 : ${message}`);
   }
 
-  console.log("data allBlogs :", allBlogs);
   return (
     <div className="pt-3">
-      <div
-        className="cursor-pointer"
-        onClick={() => router.push(`details/${allBlogs[0].id}`)}
-      >
-        {allBlogs.length > 0 && (
-          <div className="flex border-b pb-1">
-            <div className=" relative w-[55%] h-[330px] mb-10">
-              <Image
-                src={allBlogs[0].imageUrl}
-                alt={allBlogs[0].title}
-                fill
-                priority
-                loader={({ src }) => src}
-                className="shadow-2xl"
-              />
-            </div>
-            <div className="flex-1 ml-3 flex flex-col">
-              <p className="font-bold text-2xl mb-2 text-gray-700">
-                {allBlogs[0].title}
-              </p>
-              <p
-                className="line-clamp-2 text-gray-500"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(allBlogs[0].content),
-                }}
-              ></p>
-              <p className="self-end">
-                {TimeTransform(allBlogs[0].createdAt).date}
-              </p>
-            </div>
+      {pinnedData.length > 0 && (
+        <div
+          className="flex border-b pb-1 cursor-pointer"
+          onClick={() => router.push(`details/${pinnedData[0].id}`)}
+        >
+          <div className=" relative w-[55%] h-[330px] mb-10">
+            <Image
+              src={pinnedData[0].imageUrl}
+              alt={pinnedData[0].title}
+              fill
+              priority
+              loader={({ src }) => src}
+              className="shadow-2xl"
+            />
           </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-2 py-10">
-          {allBlogs &&
-            allBlogs
-              .slice(1)
-              .map((blog) => <BlogCard key={blog.id} blog={blog} />)}
+          <div className="flex-1 ml-3 flex flex-col">
+            <p className="font-bold text-2xl mb-2 text-gray-700">
+              {pinnedData[0].title}
+            </p>
+            <p
+              className="line-clamp-2 text-gray-500"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(pinnedData[0].content),
+              }}
+            ></p>
+            <p className="self-end">
+              {TimeTransform(pinnedData[0].createdAt).date}
+            </p>
+          </div>
         </div>
-        <div ref={observerRef} />
-        {isFetchingNextPage && <p>글 불러오는 중...</p>}
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-2 py-10">
+        {allBlogs &&
+          allBlogs.map((blog) => <BlogCard key={blog.id} blog={blog} />)}
       </div>
+      <div ref={observerRef} />
+      {isFetchingNextPage && <p>글 불러오는 중...</p>}
     </div>
   );
 }

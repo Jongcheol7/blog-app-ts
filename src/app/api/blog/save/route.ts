@@ -4,7 +4,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const { id, title, content, tags, category, imageUrl, privateYn } =
+  const { id, title, content, tags, category, imageUrl, privateYn, pinnedYn } =
     await request.json();
 
   console.log("id : ", id);
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
   console.log("category : ", category);
   console.log("privateYn : ", privateYn);
   console.log("imageUrl : ", imageUrl);
+  console.log("pinnedYn :", pinnedYn);
 
   if (!title || title.trim().length === 0) {
     console.error("글 제목이 없습니다.");
@@ -51,7 +52,16 @@ export async function POST(request: Request) {
         })
       )
     );
-    console.log("tagResults : ", tagResults);
+
+    // 핀을 지정했다면 기존에 저장된 핀은 제거하자.
+    if (pinnedYn) {
+      await prisma.blog.updateMany({
+        where: { pinnedYn: true },
+        data: {
+          pinnedYn: false,
+        },
+      });
+    }
 
     // Blog 저장
     let blogResult;
@@ -62,6 +72,7 @@ export async function POST(request: Request) {
           title,
           content,
           privateYn,
+          pinnedYn,
           imageUrl,
           categoryId: Number(category),
         },
@@ -73,6 +84,7 @@ export async function POST(request: Request) {
           content,
           userId: session.user.id,
           privateYn,
+          pinnedYn,
           imageUrl,
           categoryId: Number(category),
         },

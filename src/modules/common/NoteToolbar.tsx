@@ -12,8 +12,15 @@ import {
   AlignRight,
   SquareCheckBig,
   Type,
+  Video,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import type { Editor as TiptapEditor } from "@tiptap/react";
+import { useVideoStore } from "@/store/useVideoStore";
+
+type Prop = {
+  editor: TiptapEditor;
+};
 
 const FONT_SIZES = ["14px", "16px", "20px", "24px", "28px", "32px"];
 const COLOR_PALETTE = [
@@ -28,12 +35,14 @@ const COLOR_PALETTE = [
   "#6b7280", // gray
 ];
 
-export default function NoteToolbar({ editor }) {
-  const fileInputRef = useRef(null);
+export default function NoteToolbar({ editor }: Prop) {
+  const fileInputRef = useRef<Record<string, File>>(null);
+  const videoInputRef = useRef<Record<string, File>>(null);
   const [isFontSizeOpen, setIsFontSizeOpen] = useState(false);
   const [isAlignOpen, setIsAlignOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
   const toolbarRef = useRef(null);
+  const { addFile } = useVideoStore();
 
   // ✅ 바깥 클릭 감지 → 모든 팝업 닫기
   useEffect(() => {
@@ -103,6 +112,33 @@ export default function NoteToolbar({ editor }) {
     };
 
     reader.readAsDataURL(file);
+  };
+
+  // 임시 파일 저장소 (저장 시 실제 Mux 업로드에 쓰일 예정)
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    console.log("ddd file : ", file);
+    if (!file) return;
+
+    const MAX_VIDEO_SIZE_MB = 1024;
+    if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
+      alert(`영상 크기는 ${MAX_VIDEO_SIZE_MB}MB 이하만 가능합니다.`);
+      return;
+    }
+
+    // placeholder ID 만들기 (파일명 + 타임스탬프 조합)
+    const tempId = `__TEMP_VIDEO_${Date.now()}__`;
+    console.log("ddd tempId : ", tempId);
+
+    // Zustand 스토어에 저장
+    addFile(tempId, file);
+
+    // 에디터에 placeholder muxVideo 삽입
+    editor.commands.insertMuxVideo(tempId);
+    console.log("editor.getHTML() : ", editor.getHTML());
+
+    // input 초기화 (같은 파일 다시 선택할 수 있게)
+    e.target.value = "";
   };
   return (
     <>
@@ -202,6 +238,18 @@ export default function NoteToolbar({ editor }) {
         <ImagePlus
           className="w-5 h-5 cursor-pointer hover:text-red-700"
           onClick={() => fileInputRef.current?.click()}
+        />
+        {/* 비디오 업로드 버튼 */}
+        <input
+          type="file"
+          accept="video/*"
+          hidden
+          ref={videoInputRef}
+          onChange={handleVideoSelect}
+        />
+        <Video
+          className="w-5 h-5 cursor-pointer hover:text-red-700"
+          onClick={() => videoInputRef.current?.click()}
         />
         {/* 리스트 버튼 */}
         <List

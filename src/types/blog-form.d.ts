@@ -8,4 +8,5 @@ type BlogForm = {
   privateYn: boolean;
   pinnedYn: boolean;
   createdAt: string;
+  collectedVideos: { assetId: string; playbackId: string }[];
 };

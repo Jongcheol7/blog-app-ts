@@ -77,6 +77,7 @@ model Blog {
   comments  Comment[]
   blogLikes BlogLikes[]
   blogTags  BlogTags[]
+  videos    BlogVideo[]
 }
 
 model BlogLikes {
@@ -142,4 +143,14 @@ model Guestbook {
   deletedAt  DateTime?
 
   user       User    @relation(fields: [userId], references: [id])
+}
+
+model BlogVideo {
+  id      Int   @id @default(autoincrement())
+  blogId  Int 
+  assetId String 
+  playbackId  String 
+  createdAt   DateTime  @default(now()) 
+
+  blog  Blog  @relation(fields:[blogId], references:[id])
 }

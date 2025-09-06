@@ -12,6 +12,8 @@ import { UploadToS3 } from "../common/UploadToS3";
 import Editor from "../common/Editor";
 import { useBlogDetails } from "@/hooks/useBlogDetails";
 import type { Editor as TiptapEditor } from "@tiptap/react";
+import { useVideoStore } from "@/store/useVideoStore";
+import axios from "axios";
 
 export default function BlogForm({ id }: { id: string }) {
   const [editor, setEditor] = useState<TiptapEditor | null>(null);
@@ -20,6 +22,7 @@ export default function BlogForm({ id }: { id: string }) {
   const { data } = useBlogDetails(Number(id));
   const { mutate: saveMutation, isPending: savingPending } =
     useBlogWriteMutation();
+  const { getFile } = useVideoStore();
 
   const { register, setValue, getValues, handleSubmit, watch, reset } =
     useForm<BlogForm>({
@@ -117,18 +120,18 @@ export default function BlogForm({ id }: { id: string }) {
 
     let uploadHtml = html;
     // data: 또는 blob: 모두 매칭
-    const matches = [
+    const matchesImg = [
       ...html.matchAll(
         /<img[^>]+src="((?:data:image\/[^"]+|blob:[^"]+))"[^>]*>/g
       ),
     ];
 
-    console.log("matches :", matches);
-    for (let i = 0; i < matches.length; i++) {
-      const fullTag = matches[i][0]; //"<img src=\"blob:http://localhost:3000/cd71e97a-a35d-453
+    console.log("matchesImg :", matchesImg);
+    for (let i = 0; i < matchesImg.length; i++) {
+      const fullTag = matchesImg[i][0]; //"<img src=\"blob:http://localhost:3000/cd71e97a-a35d-453
 
       //blob url 추출
-      const src = matches[i][1]; //"blob:http://localhost:3000/cd71e97a-a35d-4535-85f0-9d3fe6c4efef"
+      const src = matchesImg[i][1]; //"blob:http://localhost:3000/cd71e97a-a35d-4535-85f0-9d3fe6c4efef"
 
       // blob url을 Blob 객체로 바꾸자.
       const res = await fetch(src);
@@ -147,11 +150,79 @@ export default function BlogForm({ id }: { id: string }) {
       uploadHtml = uploadHtml.replace(fullTag, replaceTag);
     }
 
+    // 비디오 태그 매칭
+    const collectedVideos: { assetId: string; playbackId: string }[] = [];
+    let uploadHtml2 = uploadHtml;
+    const matchesVideo = [
+      ...html.matchAll(
+        /<div[^>]+data-temp-video="true"[^>]+data-temp-id="([^"]+)"[^>]*>.*?<\/div>/g
+      ),
+    ];
+
+    for (let j = 0; j < matchesVideo.length; j++) {
+      const fullTag = matchesVideo[j][0];
+      const tempId = matchesVideo[j][1];
+
+      try {
+        // zustand 에서 파일 꺼내보자.
+        const file = getFile(tempId);
+        if (!file) continue;
+
+        //1. Mux 업로드 Url 생성
+        const muxPresignedRes = await axios.post("/api/blog/upload/video");
+        if (muxPresignedRes.data.error)
+          throw new Error("Mux Presigned URL 생성실패");
+
+        const { url, id, error } = muxPresignedRes.data;
+        if (error || !url || !id) throw new Error("Mux Presigned URL 생성실패");
+
+        console.log("Mux presigned url :", url);
+        console.log("Mux presigned id :", id);
+
+        //2. presigned url으로 Mux 에 실제로 업로드
+        await axios.put(url, file, {
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+
+        //3. Mux에서 asset_id 와 playback_id(영상찾을떄사용) 받아오기
+        for (let tries = 0; tries < 10; tries++) {
+          let assetId = null;
+          let playbackId = null;
+          const res = await axios.get(`/api/blog/upload/video?uploadId=${id}`);
+          if (res.data.asset_id && res.data.playback_id) {
+            assetId = res.data.asset_id;
+            playbackId = res.data.playback_id;
+
+            //4. 기존 div 태그에 Mux 태그로 교체하자.
+            const videoTag = `<mux-player
+                              stream-type="on-demand"
+                              playback-id="${playbackId}"
+                              metadata-video-title="Blog Video"
+                              style="width: 100%; max-height: 400px;"
+                              controls
+                            ></mux-player>`;
+            uploadHtml2 = uploadHtml2.replace(fullTag, videoTag);
+
+            collectedVideos.push({ assetId, playbackId });
+            break;
+          }
+          await new Promise((r) => setTimeout(r, 2000));
+        }
+      } catch (err) {
+        console.error("비디오 업로드 중 에러:", err);
+        toast.error("비디오 업로드 처리중 문제가 발생했습니다.");
+        return false;
+      }
+    }
+
     console.log("저장전 data : ", data);
     // 노트 저장.
     saveMutation({
       ...data,
-      content: uploadHtml,
+      collectedVideos,
+      content: uploadHtml2,
     });
   };
 
@@ -173,7 +244,7 @@ export default function BlogForm({ id }: { id: string }) {
               <input
                 id="privateYn"
                 type="checkbox"
-                defaultChecked={data.details.privateYn}
+                defaultChecked={data?.details?.privateYn}
                 {...register("privateYn")}
               />
             </div>
@@ -184,7 +255,7 @@ export default function BlogForm({ id }: { id: string }) {
               <input
                 id="pinnedYn"
                 type="checkbox"
-                defaultChecked={data.details.pinnedYn}
+                defaultChecked={data?.details?.pinnedYn}
                 {...register("pinnedYn")}
               />
             </div>

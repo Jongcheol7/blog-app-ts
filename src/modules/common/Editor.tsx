@@ -13,10 +13,14 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import NoteToolbar from "./NoteToolbar";
 import imageCompression from "browser-image-compression";
+import { MuxVideo } from "./MuxVideo";
 //import NoteToolbar from "./NoteToolbar";
 
 export default function Editor({ setEditor, content, readOnly }: EditorType) {
-  const safeHTML = DOMPurify.sanitize(content); // content 안에 <img src="data:..." />가 포함됨
+  const safeHTML = DOMPurify.sanitize(content, {
+    ADD_TAGS: ["mux-player"],
+    ADD_ATTR: ["playback-id", "stream-type", "metadata-video-title"],
+  }); // content 안에 <img src="data:..." />가 포함됨
   const prevImgsRef = useRef<string[]>([]);
 
   const editor = useEditor({
@@ -31,6 +35,7 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
       ResizableImage,
       TextStyle,
       Color,
+      MuxVideo,
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
@@ -48,6 +53,7 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
     autofocus: false,
     async onUpdate({ editor }) {
       const html = editor.getHTML();
+
       const currentImgs = [
         ...html.matchAll(/<img[^>]+src="([^"]+)"[^>]*>/g),
       ].map((m) => m[1]);
@@ -130,6 +136,7 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
         editor.commands.setContent(safeHTML);
       });
       //editor.commands.setColor("#ff0000");
+
       const initImgs = [
         ...safeHTML.matchAll(/src="([^"]+\.(jpeg|jpg|png|webp|gif))"/gi),
       ].map((m) => m[1]);
@@ -139,6 +146,7 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
 
   if (!editor) return null;
 
+  console.log("editor.getHTML(); :", editor.getHTML());
   return (
     <div>
       <EditorContent

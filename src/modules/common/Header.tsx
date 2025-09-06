@@ -79,7 +79,7 @@ export default function Header() {
             )}
             {isAdmin && (
               <li>
-                <NavLink href="/Write">Write</NavLink>
+                <NavLink href="/write">Write</NavLink>
               </li>
             )}
 

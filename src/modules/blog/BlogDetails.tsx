@@ -20,7 +20,7 @@ export default function BlogDetails({ id }: { id: string }) {
           <div className="flex">
             <div className="flex flex-1 items-center">
               <CategoryMain
-                category={data.details.categoryId}
+                category={data?.details?.categoryId}
                 setCategory={() => {}}
                 readYn={true}
               />

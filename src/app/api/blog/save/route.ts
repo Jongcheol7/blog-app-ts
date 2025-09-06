@@ -4,8 +4,17 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const { id, title, content, tags, category, imageUrl, privateYn, pinnedYn } =
-    await request.json();
+  const {
+    id,
+    title,
+    content,
+    tags,
+    category,
+    imageUrl,
+    privateYn,
+    pinnedYn,
+    collectedVideos,
+  } = await request.json();
 
   console.log("id : ", id);
   console.log("title : ", title);
@@ -15,6 +24,7 @@ export async function POST(request: Request) {
   console.log("privateYn : ", privateYn);
   console.log("imageUrl : ", imageUrl);
   console.log("pinnedYn :", pinnedYn);
+  console.log("collectedVideos :", collectedVideos);
 
   if (!title || title.trim().length === 0) {
     console.error("글 제목이 없습니다.");
@@ -109,6 +119,19 @@ export async function POST(request: Request) {
         })
       )
     );
+
+    // 비디오 데이터 저장하자.
+    if (collectedVideos && collectedVideos.length > 0) {
+      await prisma.blogVideo.createMany({
+        data: collectedVideos.map(
+          (video: { assetId: string; playbackId: string }) => ({
+            blogId: blogResult.id,
+            assetId: video.assetId,
+            playbackId: video.playbackId,
+          })
+        ),
+      });
+    }
 
     return NextResponse.json({ blogResult });
   } catch (err) {

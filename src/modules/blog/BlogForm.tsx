@@ -94,7 +94,6 @@ export default function BlogForm({ id }: { id: string }) {
 
     data.title = getValues("title");
     data.category = category;
-    console.log("data : ", data);
 
     const html = editor?.getHTML();
     if (!html || html.trim().length === 0) {
@@ -174,6 +173,7 @@ export default function BlogForm({ id }: { id: string }) {
               <input
                 id="privateYn"
                 type="checkbox"
+                defaultChecked={data.details.privateYn}
                 {...register("privateYn")}
               />
             </div>
@@ -181,7 +181,12 @@ export default function BlogForm({ id }: { id: string }) {
               <label htmlFor="pinnedYn" className="text-gray-600 mr-1">
                 메인고정
               </label>
-              <input id="pinnedYn" type="checkbox" {...register("pinnedYn")} />
+              <input
+                id="pinnedYn"
+                type="checkbox"
+                defaultChecked={data.details.pinnedYn}
+                {...register("pinnedYn")}
+              />
             </div>
           </div>
           <Button type="submit" disabled={savingPending}>

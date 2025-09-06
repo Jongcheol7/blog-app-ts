@@ -21,9 +21,19 @@ export const MuxVideo = Node.create({
       playbackId: {
         default: null,
         parseHTML: (el) => el.getAttribute("playback-id"),
-        renderHTML: (attrs) => ({ "playback-id": attrs.playbackId }),
+        renderHTML: (attrs) => {
+          if (!attrs.playbackId) return {};
+          return { "playback-id": attrs.playbackId };
+        },
       },
-      tempId: { default: null },
+      tempId: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-temp-id"), // ✅ 추가
+        renderHTML: (attrs) => {
+          if (!attrs.tempId) return {};
+          return { "data-temp-id": attrs.tempId }; // ✅ 추가
+        },
+      },
     };
   },
 
@@ -45,7 +55,7 @@ export const MuxVideo = Node.create({
     return [
       "mux-player",
       {
-        "playback-id": HTMLAttributes.playbackId,
+        ...HTMLAttributes,
         "stream-type": "on-demand",
         controls: "true",
         contenteditable: "false",

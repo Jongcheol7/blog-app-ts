@@ -118,6 +118,7 @@ model Comment {
   userId     String 
   content    String 
   parentId   Int?
+  secretYn   Boolean  @default(false)
   createdAt  DateTime @default(now())
   modifiedAt DateTime?
   deletedAt  DateTime?

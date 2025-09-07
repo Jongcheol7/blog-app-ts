@@ -1,7 +1,9 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CommentForm from "./CommentForm";
-import { MessageCircle } from "lucide-react";
-import Image from "next/image";
+import { MessageCircle, Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { TimeTransform } from "./TimeTransform";
+import { useSession } from "next-auth/react";
 
 // 더미 데이터
 type Comment = {
@@ -9,6 +11,7 @@ type Comment = {
   content: string;
   createdAt: string;
   blogId: number;
+  isSecret: boolean;
   likes: [
     {
       id: number;
@@ -38,6 +41,13 @@ export default function CommentItem({
 }: Props) {
   const [showReply, setShowReply] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
+  const { data: session } = useSession();
+
+  const isAdmin = session?.user.isAdmin;
+  const isOwner = String(session?.user.id) === String(comment.user.id);
+  const isEditable = isAdmin || isOwner;
+
+  console.log("ddd isEditable : ", isEditable);
 
   //특정 부모에 대한 대댓글 필터링 해보자.
   const getReplies = (id: number) => {
@@ -54,29 +64,48 @@ export default function CommentItem({
       style={{ paddingLeft: `${Math.min(depth, maxDepth) * 5}px` }}
     >
       {/* 본댓글 */}
-      <div className="flex gap-2">
-        <Image
-          src={comment.user.image}
-          //src={""}
-          width={30}
-          height={30}
-          alt="프로필사진"
-          className="rounded-full object-cover self-start w-6 h-6"
-        />
+      <div
+        className="flex items-start gap-3 py-2 hover:bg-gray-50 dark:hover:bg-neutral-900 rounded-md transition"
+        style={{ paddingLeft: `${Math.min(depth, maxDepth) * 5}px` }}
+      >
+        {/* 아바타 */}
+        <Avatar className="h-9 w-9">
+          {comment.user?.image ? (
+            <AvatarImage
+              src={comment.user.image}
+              alt={comment.user.name || "?"}
+            />
+          ) : (
+            <AvatarFallback>??</AvatarFallback>
+          )}
+        </Avatar>
+        {/* 본문 */}
         <div className="flex-1">
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold">{comment.user.name}</p>
-              <p className="text-[11px]">{comment.createdAt}</p>
-            </div>
-            <p className="text-sm">{comment.content}</p>
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-sm">{comment.user.name}</span>
+            <span className="text-xs text-muted-foreground">
+              {TimeTransform(comment.createdAt).datetime}
+            </span>
+            {comment.isSecret && (
+              <span className="ml-1 text-xs text-gray-500">🔒 비밀글</span>
+            )}
           </div>
+          <p className="mt-1 text-sm whitespace-pre-wrap leading-relaxed">
+            {comment.isSecret
+              ? "🔒 작성자와 관리자만 볼 수 있는 글입니다."
+              : comment.content}
+          </p>
           <div className="flex gap-2">
-            <div className="flex items-center ">
-              <MessageCircle className="w-4 cursor-pointer hover:text-blue-500 transition" />
+            <div className="flex gap-2 items-center group ">
+              <div className="flex items-center">
+                <MessageCircle className="w-4 cursor-pointer hover:text-blue-500 transition" />
+                <p className="text-[12px] text-gray-800 flex gap-2 ml-1">
+                  {getReplies(comment.id).length}
+                  {"개 "}
+                </p>
+              </div>
+
               <p className="text-[12px] text-gray-800 flex gap-2 ml-1">
-                {getReplies(comment.id).length}
-                {"개 "}
                 {getReplies(comment.id).length > 0 ? (
                   showReply ? (
                     <span onClick={() => setShowReply(!showReply)}>숨기기</span>
@@ -86,15 +115,35 @@ export default function CommentItem({
                 ) : (
                   ""
                 )}
-                <span
-                  className="cursor-pointer"
+              </p>
+
+              <div className="flex items-center  opacity-0 group-hover:opacity-100 transition-opacity">
+                <PlusCircle className="w-3 h-3" />
+                <p
+                  className="text-[12px] text-gray-800 flex gap-2 ml-1"
                   onClick={() => {
                     setShowCommentForm(!showCommentForm);
                   }}
                 >
                   {showCommentForm ? "닫기" : "댓글작성"}
-                </span>
-              </p>
+                </p>
+              </div>
+
+              {/* 수정/삭제: 권한 없으면 렌더링 자체 생략, 권한 있으면 hover 때만 보이게 */}
+              {isEditable && (
+                <div className="ml-auto flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    type="button"
+                    className="text-xs text-gray-500 hover:text-red-600 inline-flex items-center gap-1"
+                    onClick={() => {
+                      // TODO: 삭제 요청 로직
+                    }}
+                    aria-label="댓글 삭제"
+                  >
+                    <Trash2 className="w-4 h-4" /> 삭제
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           {showCommentForm && (

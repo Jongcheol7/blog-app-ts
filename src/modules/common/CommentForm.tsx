@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 
 type FormData = {
   content: string;
+  secretYn: boolean;
 };
 type Prop = {
   blogId: number;
@@ -24,6 +25,7 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
     saveCommentMutate({
       blogId,
       content: data.content,
+      secretYn: data.secretYn,
       parentId: parentId,
     });
   };
@@ -43,6 +45,12 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
             placeholder="댓글을 입력하세요"
             className="flex-1 pr-12"
           />
+          <div className="absolute right-1 top-0 flex gap-1">
+            <label htmlFor="secretYn" className="text-gray-500 text-[12px]">
+              비밀댓글
+            </label>
+            <input type="checkbox" id="secretYn" {...register("secretYn")} />
+          </div>
           <button className="absolute right-1 bottom-1 flex self-center bg-gray-300 text-black px-3 py-2 rounded-sm font-bold text-sm cursor-pointer hover:bg-green-600 transition">
             {isCommenting ? "등록중" : "등록"}
           </button>

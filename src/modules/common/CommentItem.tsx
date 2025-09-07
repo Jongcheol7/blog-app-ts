@@ -11,7 +11,7 @@ type Comment = {
   content: string;
   createdAt: string;
   blogId: number;
-  isSecret: boolean;
+  secretYn: boolean;
   likes: [
     {
       id: number;
@@ -46,8 +46,6 @@ export default function CommentItem({
   const isAdmin = session?.user.isAdmin;
   const isOwner = String(session?.user.id) === String(comment.user.id);
   const isEditable = isAdmin || isOwner;
-
-  console.log("ddd isEditable : ", isEditable);
 
   //특정 부모에 대한 대댓글 필터링 해보자.
   const getReplies = (id: number) => {
@@ -86,12 +84,12 @@ export default function CommentItem({
             <span className="text-xs text-muted-foreground">
               {TimeTransform(comment.createdAt).datetime}
             </span>
-            {comment.isSecret && (
+            {comment.secretYn && (
               <span className="ml-1 text-xs text-gray-500">🔒 비밀글</span>
             )}
           </div>
           <p className="mt-1 text-sm whitespace-pre-wrap leading-relaxed">
-            {comment.isSecret
+            {comment.secretYn
               ? "🔒 작성자와 관리자만 볼 수 있는 글입니다."
               : comment.content}
           </p>

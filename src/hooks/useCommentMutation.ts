@@ -6,16 +6,23 @@ type CommentProp = {
   blogId: number;
   content: string;
   parentId?: number | null;
+  secretYn: boolean;
 };
 
 export function useCommentMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ blogId, content, parentId = null }: CommentProp) => {
+    mutationFn: async ({
+      blogId,
+      content,
+      parentId = null,
+      secretYn,
+    }: CommentProp) => {
       const res = await axios.post("/api/blog/comment", {
         blogId,
         content,
         parentId,
+        secretYn,
       });
       return res.data;
     },

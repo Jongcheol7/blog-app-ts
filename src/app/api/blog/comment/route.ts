@@ -4,10 +4,11 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const { blogId, content, parentId } = await request.json();
+  const { blogId, content, parentId, secretYn } = await request.json();
   console.log("댓글저장 blogId :", blogId);
   console.log("댓글저장 content :", content);
   console.log("댓글저장 parentId :", parentId);
+  console.log("댓글저장 secretYn :", secretYn);
   if (!blogId) {
     console.error("Comment 저장시 blogId 찾을수 없습니다.");
     return NextResponse.json(
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
         blogId,
         content: content.trim(),
         parentId: parentId || null,
+        secretYn,
       },
     });
     return NextResponse.json({ success: true }, { status: 200 });

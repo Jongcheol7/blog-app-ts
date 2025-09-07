@@ -7,10 +7,13 @@ import Image from "next/image";
 import { TimeTransform } from "../common/TimeTransform";
 import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchStore } from "@/store/useSearchStore";
 
 export default function BlogMain() {
   const observerRef = useRef(null);
   const router = useRouter();
+  const { keyword, category } = useSearchStore();
   const {
     data,
     isError,
@@ -18,8 +21,9 @@ export default function BlogMain() {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    //refetch,
-  } = useBlogLists();
+    refetch,
+  } = useBlogLists({ keyword, category });
+  const queryClient = useQueryClient();
 
   const pinnedData = useMemo(() => {
     if (!data?.pages?.length) return [];
@@ -29,6 +33,11 @@ export default function BlogMain() {
   const allBlogs = useMemo(() => {
     return data?.pages.flatMap((page) => page.result) ?? [];
   }, [data]);
+
+  useEffect(() => {
+    queryClient.removeQueries({ queryKey: ["blogLists"] });
+    refetch();
+  }, [keyword, category, queryClient, refetch]);
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) {

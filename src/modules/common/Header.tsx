@@ -1,16 +1,19 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NavLink from "./NavLink";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useMobileStore } from "@/store/useMobileStore";
 import { LogIn, LogOut, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useSearchStore } from "@/store/useSearchStore";
 
 export default function Header() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isMobile, setIsMobile } = useMobileStore();
+  const { setKeyword } = useSearchStore();
+  const keywordRef = useRef<HTMLInputElement>(null);
 
   // 창크기에 따른 인기글 보여주는 갯수 조절하기.
   useEffect(() => {
@@ -40,13 +43,22 @@ export default function Header() {
         <p className="text-3xl font-bold text-black">Jongcheol Lee</p>
       </NavLink>
 
-      <div className="w-[250px] relative text-gray-300">
-        <Search className="absolute top-1/2 -translate-y-1/2 left-2" />
+      <div className="w-[250px] flex gap-1 text-gray-300">
         <Input
-          className="pl-9 text-gray-700 font-bold"
+          className="text-gray-700 font-bold"
           type="text"
           placeholder="Search"
+          ref={keywordRef}
         />
+        <button
+          className="cursor-pointer border rounded-lg p-1 text-gray-400 hover:text-white hover:bg-black transition-all"
+          onClick={() => {
+            setKeyword(keywordRef.current?.value || "");
+            //if (keywordRef.current) keywordRef.current.value = "";
+          }}
+        >
+          <Search />
+        </button>
       </div>
 
       {!isMobile && (

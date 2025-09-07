@@ -2,7 +2,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export function useBlogLists() {
+type Prop = {
+  keyword: string;
+  category: number;
+};
+
+export function useBlogLists({ keyword, category }: Prop) {
   return useInfiniteQuery({
     queryKey: ["blogLists"],
     queryFn: async ({ pageParam = null }) => {
@@ -10,6 +15,8 @@ export function useBlogLists() {
         params: {
           cursor: pageParam,
           limit: 10,
+          keyword,
+          category,
         },
       });
       return res.data;

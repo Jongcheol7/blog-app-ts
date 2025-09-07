@@ -7,9 +7,13 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const cursor = searchParams.get("cursor");
   const limit = Number(searchParams.get("limit"));
+  const keyword = searchParams.get("keyword");
+  const category = Number(searchParams.get("category"));
 
   console.log("BlogLists cursor : ", cursor);
   console.log("BlogLists limit : ", limit);
+  console.log("BlogLists keyword : ", keyword);
+  console.log("BlogLists category : ", category);
 
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
@@ -28,7 +32,19 @@ export async function GET(request: Request) {
         orderBy: { id: "desc" },
       });
       const result = await prisma.blog.findMany({
-        where: { deletedAt: null, pinnedYn: false },
+        where: {
+          deletedAt: null,
+          pinnedYn: false,
+          ...(category !== 0 ? { categoryId: category } : {}),
+          ...(keyword
+            ? {
+                OR: [
+                  { title: { contains: keyword, mode: "insensitive" } },
+                  { content: { contains: keyword, mode: "insensitive" } },
+                ],
+              }
+            : {}),
+        },
         orderBy: { id: "desc" },
         take: limit,
       });
@@ -38,7 +54,19 @@ export async function GET(request: Request) {
     } else {
       // 그 다음 페이지부터
       const result = await prisma.blog.findMany({
-        where: { deletedAt: null, pinnedYn: false },
+        where: {
+          deletedAt: null,
+          pinnedYn: false,
+          ...(category !== 0 ? { categoryId: category } : {}),
+          ...(keyword
+            ? {
+                OR: [
+                  { title: { contains: keyword, mode: "insensitive" } },
+                  { content: { contains: keyword, mode: "insensitive" } },
+                ],
+              }
+            : {}),
+        },
         orderBy: { id: "desc" },
         cursor: { id: Number(cursor) },
         skip: 1,

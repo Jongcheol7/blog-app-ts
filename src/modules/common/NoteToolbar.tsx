@@ -36,18 +36,21 @@ const COLOR_PALETTE = [
 ];
 
 export default function NoteToolbar({ editor }: Prop) {
-  const fileInputRef = useRef<Record<string, File>>(null);
-  const videoInputRef = useRef<Record<string, File>>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
   const [isFontSizeOpen, setIsFontSizeOpen] = useState(false);
   const [isAlignOpen, setIsAlignOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
-  const toolbarRef = useRef(null);
+  const toolbarRef = useRef<HTMLDivElement | null>(null);
   const { addFile } = useVideoStore();
 
   // ✅ 바깥 클릭 감지 → 모든 팝업 닫기
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (toolbarRef.current && !toolbarRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        toolbarRef.current &&
+        !toolbarRef.current.contains(e.target as Node)
+      ) {
         setIsFontSizeOpen(false);
         setIsAlignOpen(false);
         setIsColorOpen(false);
@@ -64,7 +67,7 @@ export default function NoteToolbar({ editor }: Prop) {
   const MAX_IMAGES = 20; //글당 최대 이미지 갯수 제한 2개
   const MAX_FILE_SIZE_MB = 3; // 개별 이미지 최대 허용 파일 크기 (MB) - 이 용량을 넘으면 경고 후 처리 중단
   const MAX_IMAGE_WIDTH = 1200; // 최대 이미지 너비 (픽셀) - 이 너비를 넘으면 리사이징
-  const handleImageSelect = (e) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -77,7 +80,7 @@ export default function NoteToolbar({ editor }: Prop) {
     // 1. 파일 크기 검사
     if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
       alert(`이미지 크기는 ${MAX_FILE_SIZE_MB}MB 이하만 가능합니다.`);
-      fileInputRef.current.value = "";
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
@@ -89,7 +92,7 @@ export default function NoteToolbar({ editor }: Prop) {
 
     if (currentImageCount >= MAX_IMAGES) {
       alert(`이미지는 최대 ${MAX_IMAGES}개까지만 첨부할 수 있습니다.`);
-      fileInputRef.current.value = "";
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 

@@ -7,12 +7,15 @@ import Editor from "../common/Editor";
 import { useState } from "react";
 import CommentForm from "../common/CommentForm";
 import CommentLists from "../common/CommentLists";
+import { useSession } from "next-auth/react";
 
 export default function BlogDetails({ id }: { id: string }) {
   const { data } = useBlogDetails(Number(id));
+  const { data: session } = useSession();
   const [, setEditor] = useState(null);
   const router = useRouter();
-  console.log("BlogDetails 의 data : ", data);
+  const isAdmin = session?.user.isAdmin;
+
   return (
     <>
       {data && (
@@ -49,12 +52,14 @@ export default function BlogDetails({ id }: { id: string }) {
                 </div>
               </div>
             </div>
-            <Button
-              variant={"custom"}
-              onClick={() => router.push(`/edit/${id}`)}
-            >
-              수정
-            </Button>
+            {isAdmin && (
+              <Button
+                variant={"custom"}
+                onClick={() => router.push(`/edit/${id}`)}
+              >
+                수정
+              </Button>
+            )}
           </div>
           <input
             className="border-none shadow-none font-bold h-10 text-2xl rounded-xl px-1"

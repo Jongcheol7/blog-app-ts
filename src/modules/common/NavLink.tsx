@@ -13,11 +13,12 @@ export default function NavLink({ href, children }: Props) {
   const { setFrom } = useFromStore();
   const { setKeyword, setCategory } = useSearchStore();
   const path = usePathname();
-  console.log("navlink path : ", path);
+
   useEffect(() => {
     setFrom(path);
   }, [path, setFrom]);
 
+  console.log("path : ", path);
   return (
     <Link
       href={href}

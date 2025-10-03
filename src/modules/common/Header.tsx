@@ -1,32 +1,33 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import NavLink from "./NavLink";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useMobileStore } from "@/store/useMobileStore";
-import { LogIn, LogOut, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { useSearchStore } from "@/store/useSearchStore";
+import { LogIn, LogOut } from "lucide-react";
+import HeaderLogo from "./HeaderLogo";
+import SearchGroup from "./SearchGroup";
 
 export default function Header() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isMobile, setIsMobile } = useMobileStore();
-  const { setKeyword } = useSearchStore();
-  const keywordRef = useRef<HTMLInputElement>(null);
 
-  // 창크기에 따른 인기글 보여주는 갯수 조절하기.
+  // window 사이즈를 통한 상태변경
   useEffect(() => {
     const updateMobileDisplay = () => {
       if (window.innerWidth < 800) {
-        setIsMobile(true); //모바일
+        setIsMobile(true);
       } else {
         setIsMobile(false);
       }
     };
+    // 초기실행
     updateMobileDisplay();
+    // 리스너 등록
     window.addEventListener("resize", updateMobileDisplay);
-    return () => window.addEventListener("resize", updateMobileDisplay);
+    // 클린업
+    return () => window.removeEventListener("resize", updateMobileDisplay);
   }, [setIsMobile]);
 
   // 세션값 가져와서 관리자 여부인지, 세션이 있는지 판단
@@ -39,42 +40,12 @@ export default function Header() {
         isMobile ? "justify-center" : "justify-between"
       }`}
     >
-      <NavLink href={"/"}>
-        <p className="text-3xl font-bold text-black">Jongcheol Lee</p>
-      </NavLink>
-
-      <div className="w-[250px] flex gap-1 text-gray-300">
-        <Input
-          className="text-gray-700 font-bold"
-          type="text"
-          placeholder="Search"
-          ref={keywordRef}
-        />
-        <button
-          className="cursor-pointer border rounded-lg p-1 text-gray-400 hover:text-white hover:bg-black transition-all"
-          onClick={() => {
-            setKeyword(keywordRef.current?.value || "");
-            //if (keywordRef.current) keywordRef.current.value = "";
-          }}
-        >
-          <Search />
-        </button>
-      </div>
+      <HeaderLogo />
+      <SearchGroup />
 
       {!isMobile && (
         <nav className="flex gap-4 items-center">
           <ul className="flex items-center gap-5 text-lg font-semibold">
-            {/* {isUser && (
-              <li>
-                <p>
-                  {session?.user.name}
-                  <Link href={"/nickname"} className="hover:text-green-800">
-                    ⚙️
-                  </Link>{" "}
-                  님
-                </p>
-              </li>
-            )} */}
             <li>
               <NavLink href="/blog">Blog</NavLink>
             </li>

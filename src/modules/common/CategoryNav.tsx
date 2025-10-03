@@ -12,8 +12,7 @@ export default function CategoryNav() {
   const { data } = useCategoryLists();
   const { from } = useFromStore();
   const { category, setCategory } = useSearchStore();
-  console.log("CategoryNav data :", data);
-  console.log("categoryNav from :", from);
+
   if (from === "/guestbook" || from === "/about") return;
   return (
     <div className="flex gap-2 pb-3 border-b">

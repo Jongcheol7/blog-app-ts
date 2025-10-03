@@ -30,6 +30,7 @@ export default function BlogMain() {
     const firstPinned = data.pages[0]?.pinned;
     return firstPinned ? [firstPinned] : [];
   }, [data]);
+
   const allBlogs = useMemo(() => {
     return data?.pages.flatMap((page) => page.result) ?? [];
   }, [data]);

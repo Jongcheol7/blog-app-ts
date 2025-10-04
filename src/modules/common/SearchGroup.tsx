@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { useSearchStore } from "@/store/useSearchStore";
 import { Search } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 type Props = {
   setSearchClick: (val: boolean) => void;

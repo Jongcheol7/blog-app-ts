@@ -1,14 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useMobileStore } from "@/store/useMobileStore";
-import { Search } from "lucide-react";
 import HeaderLogo from "./HeaderLogo";
 import HeaderMobileNav from "./HeaderMobileNav";
 import HeaderDesktopNav from "./HeaderDesktopNav";
+import { Search } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import SearchGroup from "./SearchGroup";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isMobile, setIsMobile } = useMobileStore();
+  const [searchClick, setSearchClick] = useState(false);
 
   // window 사이즈를 통한 상태변경
   useEffect(() => {
@@ -35,17 +38,23 @@ export default function Header() {
     >
       <HeaderLogo />
 
-      {/* <SearchGroup /> */}
       {!isMobile && <HeaderDesktopNav />}
       {isMobile && (
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="absolute top-4 right-6 text-2xl font-bold z-50"
-        >
-          {isMenuOpen ? "✖️" : "☰"}
-        </button>
+        <div className="absolute flex gap-2 right-5 items-center text-2xl font-bold z-50 cursor-pointer">
+          <Search
+            className="mt-1"
+            onClick={() => setSearchClick(!searchClick)}
+          />
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="">
+            {isMenuOpen ? "✖️" : "☰"}
+          </button>
+        </div>
       )}
       {isMobile && isMenuOpen && <HeaderMobileNav />}
+
+      <AnimatePresence>
+        {searchClick && <SearchGroup setSearchClick={setSearchClick} />}
+      </AnimatePresence>
     </header>
   );
 }

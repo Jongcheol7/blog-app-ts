@@ -29,7 +29,7 @@ export default function NavLink({ href, children }: Props) {
         }
       }}
       className={`text-gray-600 ${
-        href === path ? "font-black text-[25px]" : ""
+        href === path ? "text-green-800" : ""
       } hover:`}
     >
       {children}

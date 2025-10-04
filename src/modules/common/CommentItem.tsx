@@ -115,7 +115,7 @@ export default function CommentItem({
                 )}
               </p>
 
-              <div className="flex items-center  opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                 <PlusCircle className="w-3 h-3" />
                 <p
                   className="text-[12px] text-gray-800 flex gap-2 ml-1"
@@ -129,7 +129,7 @@ export default function CommentItem({
 
               {/* 수정/삭제: 권한 없으면 렌더링 자체 생략, 권한 있으면 hover 때만 보이게 */}
               {isEditable && (
-                <div className="ml-auto flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="ml-auto flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                   <button
                     type="button"
                     className="text-xs text-gray-500 hover:text-red-600 inline-flex items-center gap-1"

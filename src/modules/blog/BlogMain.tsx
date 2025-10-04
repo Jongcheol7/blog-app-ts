@@ -9,8 +9,10 @@ import DOMPurify from "dompurify";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
+import { useMobileStore } from "@/store/useMobileStore";
 
 export default function BlogMain() {
+  const { isMobile } = useMobileStore();
   const observerRef = useRef(null);
   const router = useRouter();
   const { keyword, category } = useSearchStore();
@@ -73,7 +75,11 @@ export default function BlogMain() {
           className="flex border-b pb-1 cursor-pointer"
           onClick={() => router.push(`details/${pinnedData[0].id}`)}
         >
-          <div className=" relative w-[55%] h-[330px] mb-10">
+          <div
+            className={`relative w-[55%] mb-10 ${
+              isMobile ? "h-[230px]" : "h-[330px]"
+            }`}
+          >
             <Image
               src={pinnedData[0].imageUrl}
               alt={pinnedData[0].title}

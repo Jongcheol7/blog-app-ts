@@ -50,7 +50,11 @@ export default function Header() {
           </button>
         </div>
       )}
-      {isMobile && isMenuOpen && <HeaderMobileNav />}
+      <AnimatePresence>
+        {isMobile && isMenuOpen && (
+          <HeaderMobileNav setIsMenuOpen={setIsMenuOpen} />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {searchClick && <SearchGroup setSearchClick={setSearchClick} />}

@@ -18,12 +18,12 @@ export default function BlogDetails({ id }: { id: string }) {
 
   return (
     <>
-      {data && (
+      {data && data.details && (
         <div className="flex flex-col gap-2 mt-3">
           <div className="flex">
             <div className="flex flex-1 items-center">
               <CategoryMain
-                category={data?.details?.categoryId}
+                category={data.details.categoryId}
                 setCategory={() => {}}
                 readYn={true}
               />
@@ -53,16 +53,11 @@ export default function BlogDetails({ id }: { id: string }) {
               </div>
             </div>
             {isAdmin && (
-              <Button
-                variant={"custom"}
-                onClick={() => router.push(`/edit/${id}`)}
-              >
-                수정
-              </Button>
+              <Button onClick={() => router.push(`/edit/${id}`)}>수정</Button>
             )}
           </div>
           <input
-            className="border-none shadow-none font-bold h-10 text-2xl rounded-xl px-1"
+            className="border-none shadow-none font-bold h-10 text-2xl rounded-xl px-1 focus:outline-none"
             placeholder="제목을 입력하세요"
             value={data.details.title}
             readOnly

@@ -1,12 +1,8 @@
 "use client";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import NavLink from "./NavLink";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { useMobileStore } from "@/store/useMobileStore";
-import { LogIn, LogOut } from "lucide-react";
+import { Search } from "lucide-react";
 import HeaderLogo from "./HeaderLogo";
-import SearchGroup from "./SearchGroup";
 import HeaderMobileNav from "./HeaderMobileNav";
 import HeaderDesktopNav from "./HeaderDesktopNav";
 
@@ -38,7 +34,8 @@ export default function Header() {
       }`}
     >
       <HeaderLogo />
-      <SearchGroup />
+
+      {/* <SearchGroup /> */}
       {!isMobile && <HeaderDesktopNav />}
       {isMobile && (
         <button

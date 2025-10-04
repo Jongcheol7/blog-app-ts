@@ -1,14 +1,22 @@
-import { LogIn, LogOut } from "lucide-react";
+import { LogIn, LogOut, Search } from "lucide-react";
 import NavLink from "./NavLink";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useState } from "react";
+import SearchGroup from "./SearchGroup";
+import { AnimatePresence } from "framer-motion";
 
 export default function HeaderDesktopNav() {
+  const [searchClick, setSearchClick] = useState(false);
   const { data: session } = useSession();
   const isAdmin = session?.user.isAdmin;
 
   return (
     <nav className="flex gap-4 items-center">
       <div className="flex items-center gap-5 text-lg font-semibold">
+        <Search
+          className="cursor-pointer"
+          onClick={() => setSearchClick(!searchClick)}
+        />
         <NavLink href="/blog">Blog</NavLink>
         <NavLink href="/guestbook">Guestbook</NavLink>
         <NavLink href="/about">About</NavLink>
@@ -40,6 +48,10 @@ export default function HeaderDesktopNav() {
           )}
         </button>
       </div>
+
+      <AnimatePresence>
+        {searchClick && <SearchGroup setSearchClick={setSearchClick} />}
+      </AnimatePresence>
     </nav>
   );
 }

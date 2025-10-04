@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CommentForm from "./CommentForm";
-import { MessageCircle, Pencil, PlusCircle, Trash2 } from "lucide-react";
+import { MessageCircle, PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { TimeTransform } from "./TimeTransform";
 import { useSession } from "next-auth/react";

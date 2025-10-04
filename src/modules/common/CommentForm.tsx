@@ -1,8 +1,10 @@
 "use client";
 import { Textarea } from "@/components/ui/textarea";
 import { useCommentMutation } from "@/hooks/useCommentMutation";
+import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 type FormData = {
   content: string;
@@ -20,6 +22,7 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
     isPending: isCommenting,
     isSuccess,
   } = useCommentMutation();
+  const { data: session } = useSession();
 
   const onSubmit = (data: FormData) => {
     saveCommentMutate({
@@ -44,19 +47,26 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
             {...register("content")}
             placeholder="댓글을 입력하세요"
             className="flex-1 pr-12"
+            onFocus={() => {
+              if (!session?.user) {
+                toast.error("로그인 후 등록 가능합니다.");
+              }
+            }}
           />
         </div>
-        <div className="flex justify-end gap-2 mt-1">
-          <div className="flex items-center gap-1">
-            <label htmlFor="secretYn" className="text-gray-500 text-[12px]">
-              비밀댓글
-            </label>
-            <input type="checkbox" id="secretYn" {...register("secretYn")} />
+        {session?.user && (
+          <div className="flex justify-end gap-2 mt-1">
+            <div className="flex items-center gap-1">
+              <label htmlFor="secretYn" className="text-gray-500 text-[12px]">
+                비밀댓글
+              </label>
+              <input type="checkbox" id="secretYn" {...register("secretYn")} />
+            </div>
+            <button className="flex self-center bg-gray-300 text-black px-3 py-2 rounded-sm font-bold text-sm cursor-pointer hover:bg-green-600 transition">
+              {isCommenting ? "등록중" : "등록"}
+            </button>
           </div>
-          <button className="flex self-center bg-gray-300 text-black px-3 py-2 rounded-sm font-bold text-sm cursor-pointer hover:bg-green-600 transition">
-            {isCommenting ? "등록중" : "등록"}
-          </button>
-        </div>
+        )}
       </form>
     </div>
   );

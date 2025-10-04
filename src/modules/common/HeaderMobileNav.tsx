@@ -41,7 +41,7 @@ export default function HeaderMobileNav({ setIsMenuOpen }: Props) {
           <NavLink href="/blog">Blog</NavLink>
           <NavLink href="/guestbook">Guestbook</NavLink>
           <NavLink href="/about">About</NavLink>
-          {isAdmin && <NavLink href="/manager">Manager</NavLink>}
+          {isAdmin && <NavLink href="/admin">Admin</NavLink>}
           {isAdmin && <NavLink href="/write">Write</NavLink>}
           <button
             onClick={async () => {

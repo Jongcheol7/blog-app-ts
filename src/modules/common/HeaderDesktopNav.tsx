@@ -20,7 +20,7 @@ export default function HeaderDesktopNav() {
         <NavLink href="/blog">Blog</NavLink>
         <NavLink href="/guestbook">Guestbook</NavLink>
         <NavLink href="/about">About</NavLink>
-        {isAdmin && <NavLink href="/manager">Manager</NavLink>}
+        {isAdmin && <NavLink href="/admin">Admin</NavLink>}
         {isAdmin && <NavLink href="/write">Write</NavLink>}
 
         {/* 로그아웃시 서버에서는 잘 로그아웃이 되지만 클라이언트에서는 그걸 감지하지 못함

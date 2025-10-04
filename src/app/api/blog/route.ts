@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -14,15 +12,6 @@ export async function GET(request: Request) {
   console.log("BlogLists limit : ", limit);
   console.log("BlogLists keyword : ", keyword);
   console.log("BlogLists category : ", category);
-
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user) {
-    console.error("로그인 정보가 없습니다.");
-    return NextResponse.json(
-      { error: "로그인 정보가 없습니다." },
-      { status: 401 }
-    );
-  }
 
   try {
     // 첫페이지일때

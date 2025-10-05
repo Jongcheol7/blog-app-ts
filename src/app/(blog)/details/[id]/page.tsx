@@ -1,10 +1,6 @@
 import BlogDetails from "@/modules/blog/BlogDetails";
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
-
-export default async function Page({ params }: Props) {
-  const { id } = await params;
+export default async function Page(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params; // ✅ 이제 이렇게 해야 함!
   return <BlogDetails id={id} />;
 }

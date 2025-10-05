@@ -43,15 +43,6 @@ export const MuxVideo = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    // 저장 전 → placeholder div
-    if (HTMLAttributes.tempId) {
-      return [
-        "div",
-        { "data-temp-video": "true", "data-temp-id": HTMLAttributes.tempId },
-        "📹 저장 후 실행 가능합니다",
-      ];
-    }
-    // 저장 후에는 그냥 mux-player 태그 그대로 출력 (DB 저장용)
     return [
       "mux-player",
       {

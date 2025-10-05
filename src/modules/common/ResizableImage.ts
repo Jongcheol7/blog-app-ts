@@ -18,6 +18,7 @@ export const ResizableImage = Node.create({
     };
   },
 
+  // HTML->에디터 구조로 바꿀때 img태그를 감지해서 속성을 추출
   parseHTML() {
     return [
       {

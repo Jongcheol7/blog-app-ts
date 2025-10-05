@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { NodeViewWrapper, NodeViewProps } from "@tiptap/react";
 
 export default function ResizableImageComponent({
@@ -13,7 +13,6 @@ export default function ResizableImageComponent({
   };
 
   const imgRef = useRef<HTMLImageElement | null>(null);
-  const [isResizing, setIsResizing] = useState(false);
 
   const startResize = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();

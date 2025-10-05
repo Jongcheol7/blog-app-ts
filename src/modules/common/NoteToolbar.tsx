@@ -1,6 +1,5 @@
 "use client";
 
-import { ResizeImageIfNeeded } from "./ResizeImageIfNeeded";
 import {
   Bold,
   List,
@@ -16,7 +15,8 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Editor as TiptapEditor } from "@tiptap/react";
-import { useVideoStore } from "@/store/useVideoStore";
+import { toast } from "sonner";
+import { useFileHandler } from "@/hooks/useFileHandler";
 
 type Prop = {
   editor: TiptapEditor;
@@ -42,9 +42,9 @@ export default function NoteToolbar({ editor }: Prop) {
   const [isAlignOpen, setIsAlignOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
-  const { addFile } = useVideoStore();
+  const { handleImageSelect, handleVideoSelect } = useFileHandler(editor);
 
-  // ✅ 바깥 클릭 감지 → 모든 팝업 닫기
+  // 바깥 클릭 감지 → 모든 팝업 닫기
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -56,100 +56,40 @@ export default function NoteToolbar({ editor }: Prop) {
         setIsColorOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // 사진 파일 첨부 메서드
-  const MAX_IMAGES = 20; //글당 최대 이미지 갯수 제한 2개
-  const MAX_FILE_SIZE_MB = 3; // 개별 이미지 최대 허용 파일 크기 (MB) - 이 용량을 넘으면 경고 후 처리 중단
-  const MAX_IMAGE_WIDTH = 1200; // 최대 이미지 너비 (픽셀) - 이 너비를 넘으면 리사이징
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 파일 핸들러
+  const handerFile = async (
+    type: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    //if (session?.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    //  alert("관리자만 이미지를 업로드할 수 있습니다.");
-    //  fileInputRef.current.value = "";
-    //  return;
-    //}
-
-    // 1. 파일 크기 검사
-    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      alert(`이미지 크기는 ${MAX_FILE_SIZE_MB}MB 이하만 가능합니다.`);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
+    try {
+      if (type === "image") {
+        await handleImageSelect(file);
+      } else if (type === "video") {
+        await handleVideoSelect(file);
+      }
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      e.target.value = "";
     }
-
-    // 2. 현재 에디터에 삽입된 base64 이미지 개수 세기
-    const currentImageCount = (
-      editor.getHTML().match(/<img[^>]*src="data:image\/[^;]*;base64[^>]*>/g) ||
-      []
-    ).length;
-
-    if (currentImageCount >= MAX_IMAGES) {
-      alert(`이미지는 최대 ${MAX_IMAGES}개까지만 첨부할 수 있습니다.`);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
-    }
-
-    // 3. FileReader로 base64 변환 → 에디터 삽입
-    const reader = new FileReader();
-
-    reader.onload = async () => {
-      const base64 = reader.result;
-
-      // ⛔ 너무 큰 경우 → 리사이징
-      const resizedBase64 = await ResizeImageIfNeeded(base64, MAX_IMAGE_WIDTH);
-
-      // ✅ 에디터에 base64 이미지 삽입
-      editor.commands.insertContent({
-        type: "resizableImage",
-        attrs: {
-          src: resizedBase64,
-        },
-      });
-    };
-
-    reader.readAsDataURL(file);
   };
 
-  // 임시 파일 저장소 (저장 시 실제 Mux 업로드에 쓰일 예정)
-  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    console.log("ddd file : ", file);
-    if (!file) return;
-
-    const MAX_VIDEO_SIZE_MB = 1024;
-    if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
-      alert(`영상 크기는 ${MAX_VIDEO_SIZE_MB}MB 이하만 가능합니다.`);
-      return;
-    }
-
-    // placeholder ID 만들기 (파일명 + 타임스탬프 조합)
-    const tempId = `__TEMP_VIDEO_${Date.now()}__`;
-    console.log("ddd tempId : ", tempId);
-
-    // Zustand 스토어에 저장
-    addFile(tempId, file);
-
-    // 에디터에 placeholder muxVideo 삽입
-    editor.commands.insertMuxVideo(tempId);
-    console.log("editor.getHTML() : ", editor.getHTML());
-
-    // input 초기화 (같은 파일 다시 선택할 수 있게)
-    e.target.value = "";
-  };
   return (
     <>
       {/* 기본 툴바 */}
       <div
         ref={toolbarRef}
-        className={`w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl  mx-auto bg-white border border-gray-300 rounded-xl px-4 py-2  flex justify-around items-center
-          `}
+        className={
+          "w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto bg-white border border-gray-300 rounded-xl px-4 py-2 flex justify-around items-center"
+        }
       >
         {/* 글자크기 토글 */}
         <div className="relative">
@@ -168,7 +108,6 @@ export default function NoteToolbar({ editor }: Prop) {
                 <button
                   key={size}
                   onClick={() => {
-                    //editor.chain().focus().setFontSize(size).run();
                     setTimeout(() => {
                       editor.chain().focus().setFontSize(size).run();
                     }, 0);
@@ -236,7 +175,7 @@ export default function NoteToolbar({ editor }: Prop) {
           accept="image/*"
           hidden
           ref={fileInputRef}
-          onChange={handleImageSelect}
+          onChange={(e) => handerFile("image", e)}
         />
         <ImagePlus
           className="w-5 h-5 cursor-pointer hover:text-red-700"
@@ -248,7 +187,7 @@ export default function NoteToolbar({ editor }: Prop) {
           accept="video/*"
           hidden
           ref={videoInputRef}
-          onChange={handleVideoSelect}
+          onChange={(e) => handerFile("video", e)}
         />
         <Video
           className="w-5 h-5 cursor-pointer hover:text-red-700"

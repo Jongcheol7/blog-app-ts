@@ -56,10 +56,8 @@ export default function BlogForm({ id }: { id: string }) {
 
   // 태그 추가 이벤트
   const handleTagsKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log("키 입력됨");
     const keys = ["Enter", "Tab"];
     if (keys.includes(e.key)) {
-      console.log("엔터나 탭 키 입력됨");
       e.preventDefault();
       const newTag = e.currentTarget.value.trim().toLowerCase();
       console.log("newTag : ", newTag);
@@ -69,7 +67,6 @@ export default function BlogForm({ id }: { id: string }) {
         return;
       }
       if (newTag && !currentTags.includes(newTag)) {
-        console.log("태그 추가하기 전");
         const newTags = [...currentTags, newTag];
         setValue("tags", newTags);
         e.currentTarget.value = "";
@@ -126,7 +123,6 @@ export default function BlogForm({ id }: { id: string }) {
       ),
     ];
 
-    console.log("matchesImg :", matchesImg);
     for (let i = 0; i < matchesImg.length; i++) {
       const fullTag = matchesImg[i][0]; //"<img src=\"blob:http://localhost:3000/cd71e97a-a35d-453
 
@@ -153,12 +149,14 @@ export default function BlogForm({ id }: { id: string }) {
     // 비디오 태그 매칭
     const collectedVideos: { assetId: string; playbackId: string }[] = [];
     let uploadHtml2 = uploadHtml;
+    console.log("uploadHtml2 : ", uploadHtml2);
     const matchesVideo = [
       ...html.matchAll(
-        /<div[^>]+data-temp-video="true"[^>]+data-temp-id="([^"]+)"[^>]*>.*?<\/div>/g
+        /<mux-player[^>]+data-temp-id="([^"]+)"[^>]*><\/mux-player>/g
       ),
     ];
 
+    console.log("매치된 비디오 : ", matchesVideo);
     for (let j = 0; j < matchesVideo.length; j++) {
       const fullTag = matchesVideo[j][0];
       const tempId = matchesVideo[j][1];

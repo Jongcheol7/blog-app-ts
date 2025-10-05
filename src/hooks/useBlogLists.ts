@@ -28,6 +28,7 @@ export function useBlogLists({ keyword, category }: Prop) {
   });
 }
 
+/*
 export function useBlogPreFetch({ keyword, category }: Prop) {
   const queryClient = useQueryClient();
 
@@ -49,3 +50,4 @@ export function useBlogPreFetch({ keyword, category }: Prop) {
     });
   };
 }
+*/

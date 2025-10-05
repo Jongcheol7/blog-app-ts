@@ -43,11 +43,7 @@ export default function CommentItem({
   const [showReply, setShowReply] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const { data: session } = useSession();
-  const {
-    mutate: delMutate,
-    isPending,
-    isSuccess,
-  } = useCommentDeleteMutation();
+  const { mutate: delMutate, isPending } = useCommentDeleteMutation();
 
   const isAdmin = session?.user.isAdmin;
   const isOwner = String(session?.user.id) === String(comment.user.id);

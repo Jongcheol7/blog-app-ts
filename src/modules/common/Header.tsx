@@ -45,9 +45,7 @@ export default function Header() {
             className="mt-1"
             onClick={() => setSearchClick(!searchClick)}
           />
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="">
-            {isMenuOpen ? "✖️" : "☰"}
-          </button>
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</button>
         </div>
       )}
       <AnimatePresence>

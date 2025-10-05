@@ -3,18 +3,12 @@ import { useBlogLists } from "@/hooks/useBlogLists";
 import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import BlogCard from "./BlogCard";
-import Image from "next/image";
-import { TimeTransform } from "../common/TimeTransform";
-import DOMPurify from "dompurify";
-import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
-import { useMobileStore } from "@/store/useMobileStore";
+import BlogPinnedPost from "./BlogPinnedPost";
 
 export default function BlogMain() {
-  const { isMobile } = useMobileStore();
   const observerRef = useRef(null);
-  const router = useRouter();
   const { keyword, category } = useSearchStore();
   const {
     data,
@@ -30,7 +24,7 @@ export default function BlogMain() {
   const pinnedData = useMemo(() => {
     if (!data?.pages?.length) return [];
     const firstPinned = data.pages[0]?.pinned;
-    return firstPinned ? [firstPinned] : [];
+    return firstPinned ? firstPinned : null;
   }, [data]);
 
   const allBlogs = useMemo(() => {
@@ -70,42 +64,7 @@ export default function BlogMain() {
 
   return (
     <div className="pt-3">
-      {pinnedData.length > 0 && (
-        <div
-          className="flex border-b pb-1 cursor-pointer"
-          onClick={() => router.push(`details/${pinnedData[0].id}`)}
-        >
-          <div
-            className={`relative w-[55%] mb-10 ${
-              isMobile ? "h-[230px]" : "h-[330px]"
-            }`}
-          >
-            <Image
-              src={pinnedData[0].imageUrl}
-              alt={pinnedData[0].title}
-              fill
-              priority
-              loader={({ src }) => src}
-              className="shadow-2xl"
-            />
-          </div>
-          <div className="flex-1 ml-3 flex flex-col">
-            <p className="font-bold text-2xl mb-2 text-gray-700">
-              {pinnedData[0].title}
-            </p>
-            <p
-              className="line-clamp-2 text-gray-500"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(pinnedData[0].content),
-              }}
-            ></p>
-            <p className="self-end">
-              {TimeTransform(pinnedData[0].createdAt).date}
-            </p>
-          </div>
-        </div>
-      )}
-
+      <BlogPinnedPost pinnedData={pinnedData} />
       <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-2 py-10">
         {allBlogs &&
           allBlogs.map((blog) => <BlogCard key={blog.id} blog={blog} />)}

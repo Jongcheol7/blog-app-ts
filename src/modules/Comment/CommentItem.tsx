@@ -2,8 +2,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CommentForm from "./CommentForm";
 import { MessageCircle, PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { TimeTransform } from "./TimeTransform";
+import { TimeTransform } from "../common/TimeTransform";
 import { useSession } from "next-auth/react";
+import { useCommentDeleteMutation } from "@/hooks/useCommentMutation";
 
 // 더미 데이터
 type Comment = {
@@ -42,6 +43,11 @@ export default function CommentItem({
   const [showReply, setShowReply] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const { data: session } = useSession();
+  const {
+    mutate: delMutate,
+    isPending,
+    isSuccess,
+  } = useCommentDeleteMutation();
 
   const isAdmin = session?.user.isAdmin;
   const isOwner = String(session?.user.id) === String(comment.user.id);
@@ -95,15 +101,15 @@ export default function CommentItem({
           </p>
           <div className="flex gap-2">
             <div className="flex gap-2 items-center group ">
-              <div className="flex items-center">
-                <MessageCircle className="w-4 cursor-pointer hover:text-blue-500 transition" />
+              <div className="flex items-center hover:text-blue-500 transition">
+                <MessageCircle className="w-4 cursor-pointer" />
                 <p className="text-[12px] text-gray-800 flex gap-2 ml-1">
                   {getReplies(comment.id).length}
                   {"개 "}
                 </p>
               </div>
 
-              <p className="text-[12px] text-gray-800 flex gap-2 ml-1">
+              <p className="text-[12px] text-gray-800 flex gap-2 ml-1 hover:text-blue-500">
                 {getReplies(comment.id).length > 0 ? (
                   showReply ? (
                     <span onClick={() => setShowReply(!showReply)}>숨기기</span>
@@ -115,7 +121,7 @@ export default function CommentItem({
                 )}
               </p>
 
-              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+              <div className="flex items-center opacity-0 group-hover:opacity-100 hover:text-blue-500 transition-opacity cursor-pointer">
                 <PlusCircle className="w-3 h-3" />
                 <p
                   className="text-[12px] text-gray-800 flex gap-2 ml-1"
@@ -134,11 +140,13 @@ export default function CommentItem({
                     type="button"
                     className="text-xs text-gray-500 hover:text-red-600 inline-flex items-center gap-1"
                     onClick={() => {
-                      // TODO: 삭제 요청 로직
+                      delMutate({ blogId, id: comment.id });
                     }}
                     aria-label="댓글 삭제"
+                    disabled={isPending}
                   >
-                    <Trash2 className="w-4 h-4" /> 삭제
+                    <Trash2 className="w-4 h-4" />{" "}
+                    {isPending ? "삭제중" : "삭제"}
                   </button>
                 </div>
               )}

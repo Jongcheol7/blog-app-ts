@@ -25,6 +25,11 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
   const { data: session } = useSession();
 
   const onSubmit = (data: FormData) => {
+    if (!data.content.trim()) {
+      toast.error("댓글을 입력해주세요.");
+      return;
+    }
+
     saveCommentMutate({
       blogId,
       content: data.content,
@@ -47,6 +52,7 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
             {...register("content")}
             placeholder="댓글을 입력하세요"
             className="flex-1 pr-12"
+            readOnly={!session?.user}
             onFocus={() => {
               if (!session?.user) {
                 toast.error("로그인 후 등록 가능합니다.");
@@ -62,7 +68,10 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
               </label>
               <input type="checkbox" id="secretYn" {...register("secretYn")} />
             </div>
-            <button className="flex self-center bg-gray-300 text-black px-3 py-2 rounded-sm font-bold text-sm cursor-pointer hover:bg-green-600 transition">
+            <button
+              className="flex self-center bg-gray-300 text-black px-3 py-2 rounded-sm font-bold text-sm cursor-pointer hover:bg-green-600 transition"
+              disabled={isCommenting}
+            >
               {isCommenting ? "등록중" : "등록"}
             </button>
           </div>

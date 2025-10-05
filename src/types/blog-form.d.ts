@@ -10,3 +10,13 @@ type BlogForm = {
   createdAt: string;
   collectedVideos: { assetId: string; playbackId: string }[];
 };
+
+type PinnedPost = {
+  pinnedData: {
+    id: number;
+    title: string;
+    content: string;
+    imageUrl: string;
+    createdAt: string;
+  };
+};

@@ -4,7 +4,7 @@ import { useCategoryLists } from "@/hooks/useCategoryLists";
 import { useFromStore } from "@/store/useFromStore";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useState } from "react";
-import CategoryPopup from "../blog/CategoryPopup";
+import CategoryPopup from "./CategoryPopup";
 import { AnimatePresence } from "framer-motion";
 
 export default function CategoryNav() {

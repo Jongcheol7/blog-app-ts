@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import SessionProvider from "@/components/common/SessionProvider";
 import ReactQueryProvider from "@/components/common/ReactQueryProvider";
 import Header from "@/modules/common/Header";
-import CategoryNav from "@/modules/common/CategoryNav";
+import CategoryNav from "@/modules/Category/CategoryNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

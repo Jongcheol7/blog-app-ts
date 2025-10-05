@@ -18,7 +18,6 @@ export default function NavLink({ href, children }: Props) {
     setFrom(path);
   }, [path, setFrom]);
 
-  console.log("path : ", path);
   return (
     <Link
       href={href}

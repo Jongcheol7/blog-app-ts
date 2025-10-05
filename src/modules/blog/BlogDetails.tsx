@@ -1,13 +1,14 @@
 "use client";
 import { useBlogDetails } from "@/hooks/useBlogDetails";
-import CategoryMain from "./CategoryMain";
+import CategoryMain from "../Category/CategoryMain";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Editor from "../common/Editor";
 import { useState } from "react";
-import CommentForm from "../common/CommentForm";
-import CommentLists from "../common/CommentLists";
+import CommentForm from "../Comment/CommentForm";
+import CommentLists from "../Comment/CommentLists";
 import { useSession } from "next-auth/react";
+import LabelCheckbox from "../common/LabelCheckbox";
 
 export default function BlogDetails({ id }: { id: string }) {
   const { data } = useBlogDetails(Number(id));
@@ -28,28 +29,18 @@ export default function BlogDetails({ id }: { id: string }) {
                 readYn={true}
               />
               <div className="flex items-center ml-5 gap-3">
-                <div>
-                  <label htmlFor="privateYn" className="text-gray-600 mr-1">
-                    비밀글 설정
-                  </label>
-                  <input
-                    id="privateYn"
-                    type="checkbox"
-                    defaultChecked={data.details.privateYn}
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label htmlFor="pinnedYn" className="text-gray-600 mr-1">
-                    메인고정
-                  </label>
-                  <input
-                    id="pinnedYn"
-                    type="checkbox"
-                    defaultChecked={data.details.pinnedYn}
-                    disabled
-                  />
-                </div>
+                <LabelCheckbox
+                  label={"Private"}
+                  id={"privateYn"}
+                  isDisabled={true}
+                  defaultVal={data.details.privateYn}
+                />
+                <LabelCheckbox
+                  label={"Main"}
+                  id={"pinnedYn"}
+                  isDisabled={true}
+                  defaultVal={data.details.pinnedYn}
+                />
               </div>
             </div>
             {isAdmin && (

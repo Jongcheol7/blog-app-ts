@@ -4,8 +4,7 @@ import axios from "axios";
 export function useCommentLists(blogId: number) {
   return useInfiniteQuery({
     queryKey: ["commentLists", blogId],
-    queryFn: async ({ pageParam = null, queryKey }) => {
-      const [, blogId] = queryKey;
+    queryFn: async ({ pageParam = null }) => {
       const res = await axios.get("/api/blog/comment", {
         params: { blogId, cursor: pageParam, limit: 10 },
       });

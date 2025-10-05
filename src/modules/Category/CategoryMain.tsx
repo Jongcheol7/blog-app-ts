@@ -2,12 +2,6 @@ import { useState } from "react";
 import { useCategoryLists } from "@/hooks/useCategoryLists";
 import CategoryPopup from "./CategoryPopup";
 
-type CategoryType = {
-  id: number;
-  name: string;
-  parentId?: number;
-};
-
 type Props = {
   category: string;
   setCategory: (val: string) => void;
@@ -16,8 +10,6 @@ type Props = {
 export default function CategoryMain({ category, setCategory, readYn }: Props) {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const { data } = useCategoryLists();
-
-  console.log("카테고리메인 category :", category);
 
   const handleCategory = (val: string) => {
     if (val === "-1") {
@@ -33,12 +25,13 @@ export default function CategoryMain({ category, setCategory, readYn }: Props) {
       <select
         onChange={(e) => handleCategory(e.target.value)}
         value={category}
-        className="text-xl border py-1 px-1 font-bold"
+        className="text-xl border py-1 px-1 font-bold rounded-xl"
         disabled={readYn}
       >
-        <option value={"-1"}>Add</option>
+        <option>Select</option>
+        <option value={"-1"}>Setting</option>
         {data?.categoryLists &&
-          data?.categoryLists?.map((cat: CategoryType) => (
+          data?.categoryLists?.map((cat: Category) => (
             <option key={cat.id} value={String(cat.id)} className="">
               {cat.name}
             </option>

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import CategoryMain from "./CategoryMain";
+import CategoryMain from "../Category/CategoryMain";
 import { useBlogWriteMutation } from "@/hooks/useBlogWriteMutations";
 import { Button } from "@/components/ui/button";
 import ImagePicker from "../common/ImagePicker";

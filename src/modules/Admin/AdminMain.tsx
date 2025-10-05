@@ -1,5 +1,3 @@
-import CategoryNav from "../common/CategoryNav";
-
 export default function AdminMain() {
   return (
     <div>

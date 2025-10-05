@@ -74,6 +74,7 @@ export async function GET(request: Request) {
     const comments = await prisma.comment.findMany({
       where: {
         blogId,
+        deletedAt: null,
       },
       include: {
         user: true,
@@ -89,6 +90,46 @@ export async function GET(request: Request) {
     console.error("댓글 조회에 실패했습니다.", err);
     return NextResponse.json(
       { error: "댓글 조회에 실패했습니다." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  const { blogId, id } = await request.json();
+  if (!blogId) {
+    return NextResponse.json(
+      { error: "게시글 번호가 없습니다." },
+      { status: 400 }
+    );
+  }
+  if (!id) {
+    return NextResponse.json(
+      { error: "해당 댓글 번호가 없습니다." },
+      { status: 400 }
+    );
+  }
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return NextResponse.json(
+      { error: "로그인 정보가 없습니다." },
+      { status: 401 }
+    );
+  }
+
+  //댓글삭제구현
+  try {
+    const result = await prisma.comment.update({
+      where: { id: Number(id) },
+      data: { deletedAt: new Date() },
+    });
+    return NextResponse.json(
+      { success: "댓글 삭제완료", result },
+      { status: 200 }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      { error: "카테고리 삭제에 실패했습니다." + err },
       { status: 500 }
     );
   }

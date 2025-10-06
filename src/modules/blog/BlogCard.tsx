@@ -4,6 +4,7 @@ import DOMPurify from "dompurify";
 import Image from "next/image";
 import { TimeTransform } from "../common/TimeTransform";
 import { useRouter } from "next/navigation";
+import { useBlogViewsMutation } from "@/hooks/useBlogViews";
 
 type Props = {
   blog: BlogForm;
@@ -11,11 +12,15 @@ type Props = {
 
 export default function BlogCard({ blog }: Props) {
   const router = useRouter();
+  const { mutateAsync: viewMutate } = useBlogViewsMutation();
 
   return (
     <Card
       className="cursor-pointer"
-      onClick={() => router.push(`details/${blog.id}`)}
+      onClick={async () => {
+        await viewMutate(blog.id);
+        router.push(`details/${blog.id}`);
+      }}
     >
       <CardContent className="group relative">
         <div className="flex relative w-full h-[300px] group-hover:blur-xs">

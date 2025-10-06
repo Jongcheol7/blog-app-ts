@@ -20,6 +20,7 @@ model User {
   comment       Comment[]
   guestbook     Guestbook[]
   blogLikes     BlogLikes[]
+  blogViews     BlogViews[]
 }
 
 model Account {
@@ -78,6 +79,7 @@ model Blog {
   blogLikes BlogLikes[]
   blogTags  BlogTags[]
   videos    BlogVideo[]
+  blogViews BlogViews[]
 }
 
 model BlogLikes {
@@ -154,4 +156,18 @@ model BlogVideo {
   createdAt   DateTime  @default(now()) 
 
   blog  Blog  @relation(fields:[blogId], references:[id])
+}
+
+model BlogViews { 
+  id   Int  @id @default(autoincrement())
+  blogId Int 
+  userId String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  blog Blog @relation(fields:[blogId], references:[id])
+  user User? @relation(fields:[userId], references:[id])
+
+  @@index([blogId])
+  @@index([userId])
 }

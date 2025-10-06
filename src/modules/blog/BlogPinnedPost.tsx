@@ -4,16 +4,22 @@ import { TimeTransform } from "../common/TimeTransform";
 import { useRouter } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
 import { useMobileStore } from "@/store/useMobileStore";
+import { useBlogViewsMutation } from "@/hooks/useBlogViews";
 
 export default function BlogPinnedPost({ pinnedData }: PinnedPost) {
   const { isMobile } = useMobileStore();
+  const { mutateAsync: viewMutate } = useBlogViewsMutation();
+
   const router = useRouter();
   return (
     <div>
       {pinnedData && (
         <div
           className="flex border-b pb-1 cursor-pointer"
-          onClick={() => router.push(`details/${pinnedData.id}`)}
+          onClick={async () => {
+            await viewMutate(pinnedData.id);
+            router.push(`details/${pinnedData.id}`);
+          }}
         >
           <div
             className={`relative w-[55%] mb-10 ${

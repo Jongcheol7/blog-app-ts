@@ -41,6 +41,10 @@ export default function BlogDetails({ id }: { id: string }) {
                   isDisabled={true}
                   defaultVal={data.details.pinnedYn}
                 />
+                <div className="flex items-center gap-1">
+                  <span>Views</span>
+                  <span>{data.details.views}</span>
+                </div>
               </div>
             </div>
             {isAdmin && (

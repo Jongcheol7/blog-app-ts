@@ -1,9 +1,7 @@
 import BlogForm from "@/modules/blog/BlogForm";
 
 type Props = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
 export default async function Page({ params }: Props) {

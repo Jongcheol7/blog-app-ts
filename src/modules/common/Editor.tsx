@@ -14,6 +14,23 @@ import TaskItem from "@tiptap/extension-task-item";
 import NoteToolbar from "./NoteToolbar";
 import imageCompression from "browser-image-compression";
 import { MuxVideo } from "./MuxVideo";
+
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { createLowlight } from "lowlight";
+
+// highlight.js 언어 정의 import
+import javascript from "highlight.js/lib/languages/javascript";
+import typescript from "highlight.js/lib/languages/typescript";
+import java from "highlight.js/lib/languages/java";
+
+// ✅ createLowlight()로 인스턴스 생성
+const lowlight = createLowlight();
+
+// ✅ registerLanguage → register 로 변경
+lowlight.register("javascript", javascript);
+lowlight.register("typescript", typescript);
+lowlight.register("java", java);
+
 //import NoteToolbar from "./NoteToolbar";
 
 export default function Editor({ setEditor, content, readOnly }: EditorType) {
@@ -27,6 +44,7 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
     extensions: [
       StarterKit.configure({
         //history: false, // ✅ undo/redo 자체를 끔
+        codeBlock: false, // 기본 codeBlock 비활성화 (Lowlight로 대체)
       }),
       Placeholder.configure({
         placeholder: "여기에 메모를 입력하세요...",
@@ -45,6 +63,9 @@ export default function Editor({ setEditor, content, readOnly }: EditorType) {
       TaskList,
       TaskItem.configure({
         nested: true,
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
       }),
     ],
     immediatelyRender: false,

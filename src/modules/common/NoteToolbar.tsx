@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Editor as TiptapEditor } from "@tiptap/react";
 import { toast } from "sonner";
 import { useFileHandler } from "@/hooks/useFileHandler";
+import { Button } from "@/components/ui/button";
 
 type Prop = {
   editor: TiptapEditor;
@@ -193,6 +194,15 @@ export default function NoteToolbar({ editor }: Prop) {
           className="w-5 h-5 cursor-pointer hover:text-red-700"
           onClick={() => videoInputRef.current?.click()}
         />
+        {/* 코드 버튼 */}
+        <Button
+          type="button"
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          title="Code Block"
+        >
+          {"</>"}
+        </Button>
+
         {/* 리스트 버튼 */}
         <List
           className="w-5 h-5  cursor-pointer hover:text-red-700"

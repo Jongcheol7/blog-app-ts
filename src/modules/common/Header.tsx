@@ -32,7 +32,7 @@ export default function Header() {
 
   return (
     <header
-      className={`flex items-center  px-1 py-4 pb-10 ${
+      className={`relative flex items-center  px-1 py-4 pb-10 ${
         isMobile ? "justify-center" : "justify-between"
       }`}
     >
@@ -40,7 +40,7 @@ export default function Header() {
 
       {!isMobile && <HeaderDesktopNav />}
       {isMobile && (
-        <div className="absolute flex gap-2 right-5 items-center text-2xl font-bold z-50 cursor-pointer">
+        <div className="absolute flex  gap-1 right-2 items-center text-2xl font-bold z-50 cursor-pointer">
           <Search
             className="mt-1"
             onClick={() => setSearchClick(!searchClick)}

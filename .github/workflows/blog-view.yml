@@ -1,0 +1,15 @@
+name: Blog view-up update
+
+on:
+  schedule:
+    - cron: "*/30 * * * *" # 30분마다 실행
+  workflow_dispatch:
+
+jobs:
+  update-views:
+    runs-on: ubuntu-latest
+    steps:
+      - name: POST to Blog view API
+        run: |
+          curl -X POST https://blog-app-ts-iota.vercel.app/api/blog/views/githubAction \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

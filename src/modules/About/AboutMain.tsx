@@ -1,168 +1,106 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
 
-export default function AboutMain() {
+import { Github, Mail } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function AboutPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-      {/* About */}
-      <section>
-        <h1 className="text-2xl font-bold mb-4">다시 시작한 개발자의 길</h1>
-        <p className="text-muted-foreground leading-relaxed mb-3">
-          ERP 유지보수 업무를 맡으며 <b>Java</b>, <b>Spring</b>, <b>Oracle</b>,{" "}
-          <b>WebSquare</b> 중심의 개발 경험을 쌓았습니다. 하지만 반복되는 일상과
-          투자 실패를 겪으며 제 커리어를 돌아보게 되었고, “눈앞에 보이는 결과를
-          직접 만들고 싶다”는 마음으로 <b>프론트엔드 개발</b>에 집중하게
-          되었습니다.
+    <div className="max-w-4xl mx-auto px-6 py-16 text-gray-800">
+      {/* 1️⃣ 프로필 섹션 */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col items-center text-center space-y-4"
+      >
+        <img
+          src="/profile.jpg"
+          alt="Profile"
+          className="w-32 h-32 rounded-full object-cover shadow-md border border-gray-200"
+        />
+        <h1 className="text-3xl font-semibold">Jongcheol Lee</h1>
+        <p className="text-gray-500 text-sm">
+          Developer who keeps learning and recording 🌿
         </p>
-        <p className="text-muted-foreground leading-relaxed mb-3">
-          퇴근 후 독학으로 <b>React.js</b>, <b>Next.js</b>, <b>TypeScript</b>,{" "}
-          <b>JavaScript</b>를 학습하며 웹 애플리케이션을 직접 만들었습니다. 작은
-          프로젝트를 완성해 가는 과정에서, 단순한 기능 구현을 넘어{" "}
-          <b>사용자 경험을 설계하고 문제를 해결하는 즐거움</b>을 다시 찾을 수
-          있었습니다.
-        </p>
-        <p className="text-muted-foreground leading-relaxed">
-          앞으로도 꾸준히 배우고 적용하며, 더 나은 결과물을 만들어가는 개발자로
-          성장해 나가고자 합니다.
-        </p>
-      </section>
+      </motion.section>
 
-      {/* Tech Stack */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Tech Stack</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Frontend</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {[
-                "React.js",
-                "Next.js",
-                "TypeScript",
-                "JavaScript",
-                "Tailwind",
-                "shadcn/ui",
-              ].map((t) => (
-                <Badge key={t} variant="secondary">
-                  {t}
-                </Badge>
-              ))}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">State & Data</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {["React Query", "Zustand"].map((t) => (
-                <Badge key={t} variant="secondary">
-                  {t}
-                </Badge>
-              ))}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Backend</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {["Node.js", "Prisma", "PostgreSQL"].map((t) => (
-                <Badge key={t} variant="secondary">
-                  {t}
-                </Badge>
-              ))}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Infra & Tools</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {[
-                "AWS (S3, CloudFront)",
-                "Supabase",
-                "Mux",
-                "GitHub Actions",
-              ].map((t) => (
-                <Badge key={t} variant="secondary">
-                  {t}
-                </Badge>
-              ))}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Editors & UI</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {["Tiptap", "CKEditor", "Lexical"].map((t) => (
-                <Badge key={t} variant="secondary">
-                  {t}
-                </Badge>
-              ))}
-            </CardContent>
-          </Card>
+      {/* 2️⃣ 소개 섹션 */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="mt-16 space-y-10 leading-relaxed"
+      >
+        {/* About Me */}
+        <div>
+          <h2 className="text-xl font-semibold mb-3">👋 About Me</h2>
+          <p className="text-gray-700">
+            안녕하세요. 매일 조금씩 배우고 성장하고 싶은 개발자, 종철입니다.
+            <br />
+            <br />
+            개발을 공부하면서 매번 검색하고 또 잊어버리던 내용들을 제 방식대로
+            정리해두고 싶어 블로그를 시작했어요. 이곳은 저의 기록이자, 언젠가
+            저처럼 같은 길을 걷는 누군가에게 작은 도움이 될 수 있는 공간이
+            되었으면 합니다.
+          </p>
         </div>
-      </section>
 
-      {/* Projects */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Projects</h2>
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-medium">📌 Blog Platform</h3>
-            <p className="text-sm text-muted-foreground">
-              Stack: Next.js, Prisma, NextAuth, PostgreSQL, Tailwind, shadcn/ui,
-              Tiptap
-            </p>
-            <p className="text-sm">
-              Features: 글 작성/수정/삭제, 댓글, 카테고리, 다크모드, 이미지
-              업로드 (S3 + CloudFront)
-            </p>
-            <p className="text-sm">
-              Focus: 사용자 친화적인 마크다운 에디터와 퍼포먼스 최적화
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">📌 Note App</h3>
-            <p className="text-sm text-muted-foreground">
-              Stack: Next.js, Prisma, PostgreSQL, Zustand, React Query, Tiptap
-            </p>
-            <p className="text-sm">
-              Features: 노트 CRUD, 무한 스크롤, 카테고리 관리, 알림 캘린더
-            </p>
-            <p className="text-sm">
-              Focus: 상태 관리(Zustand)와 비동기 데이터 처리(React Query) 최적화
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">📌 Currency Exchange App</h3>
-            <p className="text-sm text-muted-foreground">
-              Stack: Next.js, TypeScript, React Query, Prisma, Supabase
-            </p>
-            <p className="text-sm">
-              Features: 실시간 환율 조회, 차트, 오프라인 캐싱, 위치 기반 환전소
-              검색
-            </p>
-            <p className="text-sm">
-              Focus: 실시간 데이터 처리와 사용자 편의 기능 강화
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium">📌 Social Media App (진행중)</h3>
-            <p className="text-sm text-muted-foreground">
-              Stack: Next.js, Clerk, Drizzle, Neon, Mux, shadcn/ui
-            </p>
-            <p className="text-sm">
-              Features: 회원 인증, 게시물 업로드, 동영상 스트리밍, 실시간 채팅
-            </p>
-            <p className="text-sm">
-              Focus: 대규모 사용자 경험을 고려한 소셜 기능 구현
-            </p>
-          </div>
+        {/* What I Do */}
+        <div>
+          <h2 className="text-xl font-semibold mb-3">💻 What I Do</h2>
+          <p className="text-gray-700">
+            평일에는 Java와 Spring을 사용하는 SI/SM 프로젝트에서 일하고 있고,
+            퇴근 후에는 프론트엔드 공부와 개인 프로젝트를 통해 새로운 기술을
+            배우며 성장하고 있습니다.
+            <br />
+            Next.js, TypeScript, React Query 등을 활용해 제가 직접 설계하고
+            만들어가는 과정을 즐기고 있어요.
+          </p>
         </div>
-      </section>
-    </main>
+
+        {/* My Values */}
+        <div>
+          <h2 className="text-xl font-semibold mb-3">🌱 My Values</h2>
+          <p className="text-gray-700">
+            완벽하지 않아도 괜찮다고 믿습니다. 중요한 건, 어제보다 오늘
+            조금이라도 나아지는 것.
+            <br />
+            개발도, 인생도 결국은 꾸준히 쌓이는 기록이라고 생각해요. 그래서 저는
+            오늘도 천천히, 하지만 멈추지 않고 나아가려 합니다.
+          </p>
+        </div>
+      </motion.section>
+
+      {/* Contact */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        className="flex justify-center gap-6 mt-16 text-gray-500"
+      >
+        <a
+          href="https://github.com/Jongcheol7"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-black transition"
+        >
+          <Github className="w-6 h-6" />
+        </a>
+        <a
+          href="mailto:whdcjf8172@gmail.com"
+          className="hover:text-black transition"
+        >
+          <Mail className="w-6 h-6" />
+        </a>
+        {/* <a
+          href="https://linkedin.com"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-black transition"
+        >
+          <Linkedin className="w-6 h-6" />
+        </a> */}
+      </motion.section>
+    </div>
   );
 }

@@ -8,10 +8,12 @@ const mux = new Mux({
 
 export async function POST() {
   try {
+    const envPrefix = process.env.NODE_ENV === "production" ? "prod" : "dev";
     const upload = await mux.video.uploads.create({
-      cors_origin: "http://localhost:3000",
+      cors_origin: process.env.NEXTAUTH_URL as string,
       new_asset_settings: {
         playback_policies: ["public"],
+        passthrough: `${envPrefix}-blog`,
       },
     });
     return NextResponse.json({ url: upload.url, id: upload.id });

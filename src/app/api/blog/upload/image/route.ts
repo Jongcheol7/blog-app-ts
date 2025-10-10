@@ -17,7 +17,8 @@ export async function POST(request: Request) {
   }
   const ext = fileType?.split("/")[1] || "jpg";
 
-  const fileName = `blog/${folder}/${Date.now()}.${ext}`;
+  const envPrefix = process.env.NODE_ENV === "production" ? "prod" : "dev";
+  const fileName = `blog/${envPrefix}/${folder}/${Date.now()}.${ext}`;
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileName,

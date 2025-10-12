@@ -6,6 +6,7 @@ import BlogCard from "./BlogCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import BlogPinnedPost from "./BlogPinnedPost";
+import { Loader2 } from "lucide-react";
 
 export default function BlogMain() {
   const observerRef = useRef(null);
@@ -18,6 +19,7 @@ export default function BlogMain() {
     isFetchingNextPage,
     fetchNextPage,
     refetch,
+    isLoading,
   } = useBlogLists({ keyword, category });
   const queryClient = useQueryClient();
 
@@ -60,6 +62,24 @@ export default function BlogMain() {
   if (isError) {
     const message = error?.message;
     toast.error(`에러 발생 : ${message}`);
+  }
+
+  // 로딩중 스피너 효과
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-10 h-10 animate-spin text-gray-500" />
+      </div>
+    );
+  }
+
+  // 데이터가 없을 때 (검색 결과 없음 등)
+  if (!allBlogs?.length && !pinnedData) {
+    return (
+      <div className="flex justify-center items-center h-64 text-gray-500">
+        게시글이 없습니다.
+      </div>
+    );
   }
 
   return (

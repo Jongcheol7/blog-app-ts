@@ -44,10 +44,10 @@ export default function BlogCard({ blog }: Props) {
       </CardContent>
       <CardFooter>
         <div className="flex items-center w-full justify-between">
-          <p className="text-gray-700 font-bold text-[17px] line-clamp-1">
+          <p className="text-gray-700 font-bold text-[17px] line-clamp-1 flex-1">
             {blog.title}
           </p>
-          <p className="text-gray-600 text-[13px] w-[80px]">
+          <p className="text-gray-600 text-[13px] w-[70px]">
             {" "}
             {TimeTransform(blog.createdAt).date}
           </p>

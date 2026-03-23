@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 
 export default function BlogMain() {
   const observerRef = useRef(null);
-  const { keyword, category } = useSearchStore();
+  const { keyword, category, tag, setTag } = useSearchStore();
   const {
     data,
     isError,
@@ -20,7 +20,7 @@ export default function BlogMain() {
     fetchNextPage,
     refetch,
     isLoading,
-  } = useBlogLists({ keyword, category });
+  } = useBlogLists({ keyword, category, tag });
   const queryClient = useQueryClient();
 
   const pinnedData = useMemo(() => {
@@ -36,7 +36,7 @@ export default function BlogMain() {
   useEffect(() => {
     queryClient.removeQueries({ queryKey: ["blogLists"] });
     refetch();
-  }, [keyword, category, queryClient, refetch]);
+  }, [keyword, category, tag, queryClient, refetch]);
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) {
@@ -61,36 +61,49 @@ export default function BlogMain() {
 
   if (isError) {
     const message = error?.message;
-    toast.error(`에러 발생 : ${message}`);
+    toast.error(`Error: ${message}`);
   }
 
-  // 로딩중 스피너 효과
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-10 h-10 animate-spin text-gray-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  // 데이터가 없을 때 (검색 결과 없음 등)
   if (!allBlogs?.length && !pinnedData) {
     return (
-      <div className="flex justify-center items-center h-64 text-gray-500">
-        게시글이 없습니다.
+      <div className="flex justify-center items-center h-64 text-lg font-light text-muted-foreground">
+        No posts found.
       </div>
     );
   }
 
   return (
-    <div className="pt-3">
+    <div className="pt-6">
+      {tag && (
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-sm text-muted-foreground">Filtered by tag:</span>
+          <button
+            onClick={() => setTag("")}
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer"
+          >
+            # {tag} ×
+          </button>
+        </div>
+      )}
       <BlogPinnedPost pinnedData={pinnedData} />
-      <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-2 py-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
         {allBlogs &&
           allBlogs.map((blog) => <BlogCard key={blog.id} blog={blog} />)}
       </div>
       <div ref={observerRef} />
-      {isFetchingNextPage && <p>글 불러오는 중...</p>}
+      {isFetchingNextPage && (
+        <div className="flex justify-center py-4">
+          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+        </div>
+      )}
     </div>
   );
 }

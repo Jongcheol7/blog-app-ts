@@ -9,6 +9,8 @@ type BlogForm = {
   pinnedYn: boolean;
   createdAt: string;
   collectedVideos: { assetId: string; playbackId: string }[];
+  blogTags?: { tag: { id: number; name: string } }[];
+  readingTime?: string;
 };
 
 type PinnedPost = {

@@ -5,9 +5,10 @@ import axios from "axios";
 type Prop = {
   keyword: string;
   category: number;
+  tag?: string;
 };
 
-export function useBlogLists({ keyword, category }: Prop) {
+export function useBlogLists({ keyword, category, tag }: Prop) {
   return useInfiniteQuery({
     queryKey: ["blogLists"],
     queryFn: async ({ pageParam = null }) => {
@@ -17,6 +18,7 @@ export function useBlogLists({ keyword, category }: Prop) {
           limit: 10,
           keyword,
           category,
+          tag: tag || undefined,
         },
       });
       return res.data;
@@ -27,27 +29,3 @@ export function useBlogLists({ keyword, category }: Prop) {
     initialPageParam: null,
   });
 }
-
-/*
-export function useBlogPreFetch({ keyword, category }: Prop) {
-  const queryClient = useQueryClient();
-
-  const prefetch = async (page: string | null) => {
-    queryClient.prefetchInfiniteQuery({
-      queryKey: ["blogLists"],
-      queryFn: async ({ pageParam = page }) => {
-        const res = await axios.get("/api/blog", {
-          params: {
-            cursor: pageParam,
-            limit: 10,
-            keyword,
-            category,
-          },
-        });
-        return res.data;
-      },
-      initialPageParam: page,
-    });
-  };
-}
-*/

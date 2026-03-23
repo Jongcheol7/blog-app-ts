@@ -20,6 +20,12 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   }
+  if (!session.user.isAdmin) {
+    return NextResponse.json(
+      { error: "관리자만 카테고리를 추가할 수 있습니다." },
+      { status: 403 }
+    );
+  }
 
   try {
     const result = await prisma.category.upsert({
@@ -31,7 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ result });
   } catch (err) {
     return NextResponse.json(
-      { error: "카테고리 저장에 실패했습니다." + err },
+      { error: "카테고리 저장에 실패했습니다." },
       { status: 500 }
     );
   }
@@ -43,7 +49,7 @@ export async function GET() {
     return NextResponse.json({ categoryLists: result });
   } catch (err) {
     return NextResponse.json(
-      { error: "카테고리 조회에 실패했습니다." + err },
+      { error: "카테고리 조회에 실패했습니다." },
       { status: 500 }
     );
   }
@@ -65,6 +71,12 @@ export async function DELETE(request: Request) {
       return NextResponse.json(
         { error: "로그인 정보가 없습니다." },
         { status: 401 }
+      );
+    }
+    if (!session.user.isAdmin) {
+      return NextResponse.json(
+        { error: "관리자만 카테고리를 삭제할 수 있습니다." },
+        { status: 403 }
       );
     }
 
@@ -101,7 +113,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ result }, { status: 200 });
   } catch (err) {
     return NextResponse.json(
-      { error: "카테고리 삭제에 실패했습니다." + err },
+      { error: "카테고리 삭제에 실패했습니다." },
       { status: 500 }
     );
   }

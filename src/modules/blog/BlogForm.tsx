@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import CategoryMain from "../Category/CategoryMain";
@@ -14,6 +13,7 @@ import { useBlogDetails } from "@/hooks/useBlogDetails";
 import type { Editor as TiptapEditor } from "@tiptap/react";
 import { useVideoStore } from "@/store/useVideoStore";
 import axios from "axios";
+import { X } from "lucide-react";
 
 export default function BlogForm({ id }: { id: string }) {
   const [editor, setEditor] = useState<TiptapEditor | null>(null);
@@ -39,7 +39,6 @@ export default function BlogForm({ id }: { id: string }) {
   watch("tags");
 
   useEffect(() => {
-    console.log("로딩시 data :", data);
     if (!data?.details) return;
     setPickedImage(data.details.imageUrl);
     setCategory(data.details.categoryId);
@@ -54,41 +53,37 @@ export default function BlogForm({ id }: { id: string }) {
     });
   }, [data, reset]);
 
-  // 태그 추가 이벤트
   const handleTagsKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const keys = ["Enter", "Tab"];
     if (keys.includes(e.key)) {
       e.preventDefault();
       const newTag = e.currentTarget.value.trim().toLowerCase();
-      console.log("newTag : ", newTag);
       const currentTags = getValues("tags");
       if (currentTags.length >= 10) {
-        toast.error("태그는 최대 10개까지 추가 가능합니다.");
+        toast.error("Maximum 10 tags allowed.");
         return;
       }
       if (newTag && !currentTags.includes(newTag)) {
         const newTags = [...currentTags, newTag];
         setValue("tags", newTags);
         e.currentTarget.value = "";
-        console.log(getValues("tags"));
       }
     }
   };
-  // 태그 삭제 이벤트
+
   const handleTagDelete = (tag: string) => {
     const currentTags = getValues("tags");
     const newTags = currentTags.filter((t) => t != tag);
     setValue("tags", newTags);
   };
 
-  // 폼 제출 이벤트
   const onSubmit = async (data: BlogForm) => {
     if (!getValues("title") || getValues("title").trim().length === 0) {
-      toast.error("글 제목이 없습니다.");
+      toast.error("Title is required.");
       return false;
     }
     if (category === "") {
-      toast.error("글 카테고리가 없습니다.");
+      toast.error("Category is required.");
       return false;
     }
 
@@ -97,26 +92,22 @@ export default function BlogForm({ id }: { id: string }) {
 
     const html = editor?.getHTML();
     if (!html || html.trim().length === 0) {
-      toast.error("글 내용이 없습니다.");
+      toast.error("Content is required.");
       return false;
     }
 
-    // 썸네일을 S3에 넣는 작업 해보자.
-    // presigned URL 요청 + S3 업로드
     if (pickedImage) {
       if (typeof pickedImage === "object") {
-        console.log("pickedImage : ", pickedImage);
         const fileUrl = await UploadToS3(pickedImage as File, "thumbnail");
         if (!fileUrl) return false;
         data.imageUrl = fileUrl;
       }
     } else {
-      toast.error("썸네일은 필수입니다.");
+      toast.error("Thumbnail is required.");
       return false;
     }
 
     let uploadHtml = html;
-    // data: 또는 blob: 모두 매칭
     const matchesImg = [
       ...html.matchAll(
         /<img[^>]+src="((?:data:image\/[^"]+|blob:[^"]+))"[^>]*>/g
@@ -124,67 +115,50 @@ export default function BlogForm({ id }: { id: string }) {
     ];
 
     for (let i = 0; i < matchesImg.length; i++) {
-      const fullTag = matchesImg[i][0]; //"<img src=\"blob:http://localhost:3000/cd71e97a-a35d-453
+      const fullTag = matchesImg[i][0];
+      const src = matchesImg[i][1];
 
-      //blob url 추출
-      const src = matchesImg[i][1]; //"blob:http://localhost:3000/cd71e97a-a35d-4535-85f0-9d3fe6c4efef"
-
-      // blob url을 Blob 객체로 바꾸자.
       const res = await fetch(src);
       const blobData = await res.blob();
-
-      // Blob 객체를 File 로 바꾸자.
       const file = new File([blobData], "image.jpg", { type: blobData.type });
 
-      // presigned URL 요청 + S3 업로드
-      console.log("file : ", file);
       const fileUrl = await UploadToS3(file, "content");
       if (!fileUrl) return false;
 
-      // 기존 url 자리에 S3 presigned URL 로 바꾸기.
       const replaceTag = fullTag.replace(src, fileUrl);
       uploadHtml = uploadHtml.replace(fullTag, replaceTag);
     }
 
-    // 비디오 태그 매칭
     const collectedVideos: { assetId: string; playbackId: string }[] = [];
     let uploadHtml2 = uploadHtml;
-    console.log("uploadHtml2 : ", uploadHtml2);
     const matchesVideo = [
       ...html.matchAll(
         /<mux-player[^>]+data-temp-id="([^"]+)"[^>]*><\/mux-player>/g
       ),
     ];
 
-    console.log("매치된 비디오 : ", matchesVideo);
     for (let j = 0; j < matchesVideo.length; j++) {
       const fullTag = matchesVideo[j][0];
       const tempId = matchesVideo[j][1];
 
       try {
-        // zustand 에서 파일 꺼내보자.
         const file = getFile(tempId);
         if (!file) continue;
 
-        //1. Mux 업로드 Url 생성
         const muxPresignedRes = await axios.post("/api/blog/upload/video");
         if (muxPresignedRes.data.error)
-          throw new Error("Mux Presigned URL 생성실패");
+          throw new Error("Mux Presigned URL generation failed");
 
         const { url, id, error } = muxPresignedRes.data;
-        if (error || !url || !id) throw new Error("Mux Presigned URL 생성실패");
+        if (error || !url || !id)
+          throw new Error("Mux Presigned URL generation failed");
 
-        console.log("Mux presigned url :", url);
-        console.log("Mux presigned id :", id);
-
-        //2. presigned url으로 Mux 에 실제로 업로드
         await axios.put(url, file, {
           headers: {
             "Content-Type": file.type,
           },
         });
 
-        //3. Mux에서 asset_id 와 playback_id(영상찾을떄사용) 받아오기
         for (let tries = 0; tries < 10; tries++) {
           let assetId = null;
           let playbackId = null;
@@ -193,7 +167,6 @@ export default function BlogForm({ id }: { id: string }) {
             assetId = res.data.asset_id;
             playbackId = res.data.playback_id;
 
-            //4. 기존 div 태그에 Mux 태그로 교체하자.
             const videoTag = `<mux-player
                               stream-type="on-demand"
                               playback-id="${playbackId}"
@@ -209,14 +182,12 @@ export default function BlogForm({ id }: { id: string }) {
           await new Promise((r) => setTimeout(r, 2000));
         }
       } catch (err) {
-        console.error("비디오 업로드 중 에러:", err);
-        toast.error("비디오 업로드 처리중 문제가 발생했습니다.");
+        console.error("Video upload error:", err);
+        toast.error("Video upload failed.");
         return false;
       }
     }
 
-    console.log("저장전 data : ", data);
-    // 노트 저장.
     saveMutation({
       ...data,
       collectedVideos,
@@ -224,80 +195,81 @@ export default function BlogForm({ id }: { id: string }) {
     });
   };
 
-  //if (!data?.details) return <div>Loading ... </div>;
   return (
-    <div className="p-5">
-      <form className=" flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex justify-between">
-          <div className="flex flex-1">
+    <div className="max-w-4xl mx-auto py-8">
+      <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
+        {/* Top controls */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <CategoryMain
-              category={category ?? data.details.categoryId}
+              category={category ?? data?.details?.categoryId}
               setCategory={setCategory}
               readYn={false}
             />
-            <div className="flex items-center ml-5 gap-2">
-              <label htmlFor="privateYn" className=" text-gray-600">
-                비밀글 설정
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="accent-primary w-4 h-4"
+                  defaultChecked={data?.details?.privateYn}
+                  {...register("privateYn")}
+                />
+                Private
               </label>
-              <input
-                id="privateYn"
-                type="checkbox"
-                defaultChecked={data?.details?.privateYn}
-                {...register("privateYn")}
-              />
-            </div>
-            <div className="flex items-center ml-5 gap-2">
-              <label htmlFor="pinnedYn" className="text-gray-600 mr-1">
-                메인고정
+              <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="accent-primary w-4 h-4"
+                  defaultChecked={data?.details?.pinnedYn}
+                  {...register("pinnedYn")}
+                />
+                Pinned
               </label>
-              <input
-                id="pinnedYn"
-                type="checkbox"
-                defaultChecked={data?.details?.pinnedYn}
-                {...register("pinnedYn")}
-              />
             </div>
           </div>
-          <Button type="submit" disabled={savingPending}>
-            {savingPending ? "저장중" : "저장"}
+          <Button type="submit" disabled={savingPending} className="px-6">
+            {savingPending ? "Saving..." : "Save"}
           </Button>
         </div>
+
+        {/* Title */}
         <input
-          className="border-none shadow-none font-bold h-10 text-2xl rounded-xl px-1"
-          placeholder="제목을 입력하세요"
+          className="border-0 shadow-none font-bold text-3xl h-auto py-3 px-0 placeholder:text-muted-foreground/40 focus:outline-none bg-transparent"
+          placeholder="Post title"
           {...register("title")}
         />
 
-        {/* 썸네일 */}
+        {/* Thumbnail */}
         <ImagePicker
           pickedImage={pickedImage}
           setPickedImage={setPickedImage}
         />
 
-        <div className="flex flex-col flex-1">
-          <Input
+        {/* Tags */}
+        <div className="flex flex-col gap-3">
+          <input
             type="text"
-            placeholder="Enter나 Tab으로 태그 추가"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1"
+            placeholder="Press Enter or Tab to add tags"
+            className="border-0 border-b border-border rounded-none px-0 py-2 text-sm focus:outline-none focus:border-primary transition-colors bg-transparent placeholder:text-muted-foreground"
             onKeyDown={handleTagsKeyDown}
           />
-
-          <div className="flex flex-wrap gap-2 mt-2">
+          <div className="flex flex-wrap gap-2">
             {getValues("tags").map((tag) => (
               <span
                 key={tag}
-                className="flex items-center bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-red-300 transition-all"
+                className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-medium hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer"
                 onClick={() => handleTagDelete(tag)}
               >
                 # {tag}
+                <X className="w-3 h-3" />
               </span>
             ))}
           </div>
         </div>
 
-        {/* Editor 영역 */}
+        {/* Editor */}
         <div
-          className="flex-1 border rounded-sm p-1 h-[300px]"
+          className="border rounded-xl p-4 min-h-[400px] focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all"
           onClick={() => editor?.chain().focus()}
         >
           <Editor

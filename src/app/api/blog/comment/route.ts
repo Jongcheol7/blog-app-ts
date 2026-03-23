@@ -119,6 +119,14 @@ export async function DELETE(request: Request) {
 
   //댓글삭제구현
   try {
+    const comment = await prisma.comment.findUnique({ where: { id: Number(id) } });
+    if (!comment) {
+      return NextResponse.json({ error: "존재하지 않는 댓글입니다." }, { status: 404 });
+    }
+    if (comment.userId !== session.user.id && !session.user.isAdmin) {
+      return NextResponse.json({ error: "삭제 권한이 없습니다." }, { status: 403 });
+    }
+
     const result = await prisma.comment.update({
       where: { id: Number(id) },
       data: { deletedAt: new Date() },
@@ -129,7 +137,7 @@ export async function DELETE(request: Request) {
     );
   } catch (err) {
     return NextResponse.json(
-      { error: "카테고리 삭제에 실패했습니다." + err },
+      { error: "댓글 삭제에 실패했습니다." },
       { status: 500 }
     );
   }

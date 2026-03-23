@@ -1,5 +1,8 @@
+"use client";
+
 import { useFromStore } from "@/store/useFromStore";
 import { useSearchStore } from "@/store/useSearchStore";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -27,9 +30,11 @@ export default function NavLink({ href, children }: Props) {
           setCategory(0);
         }
       }}
-      className={`text-gray-600 ${
-        href === path ? "text-green-800" : ""
-      } hover:`}
+      className={cn(
+        "px-3 py-2 rounded-lg text-muted-foreground transition-colors duration-200",
+        "hover:text-foreground hover:bg-accent",
+        href === path && "text-foreground bg-accent font-semibold"
+      )}
     >
       {children}
     </Link>

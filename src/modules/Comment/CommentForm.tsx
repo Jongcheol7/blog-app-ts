@@ -1,5 +1,6 @@
 "use client";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useCommentMutation } from "@/hooks/useCommentMutation";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
@@ -26,7 +27,7 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
 
   const onSubmit = (data: FormData) => {
     if (!data.content.trim()) {
-      toast.error("댓글을 입력해주세요.");
+      toast.error("Please enter a comment.");
       return;
     }
 
@@ -45,35 +46,37 @@ export default function CommentForm({ blogId, parentId = null }: Prop) {
   }, [isSuccess, setValue]);
 
   return (
-    <div className="mt-3">
+    <div className="mt-6">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex gap-1 relative">
-          <Textarea
-            {...register("content")}
-            placeholder="댓글을 입력하세요"
-            className="flex-1 pr-12"
-            readOnly={!session?.user}
-            onFocus={() => {
-              if (!session?.user) {
-                toast.error("로그인 후 등록 가능합니다.");
-              }
-            }}
-          />
-        </div>
+        <Textarea
+          {...register("content")}
+          placeholder={session?.user ? "Write a comment..." : "Login to comment"}
+          className="min-h-[100px] rounded-xl resize-none bg-secondary/50 border-0 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-primary/30 transition-all placeholder:text-muted-foreground"
+          readOnly={!session?.user}
+          onFocus={() => {
+            if (!session?.user) {
+              toast.error("Please login to comment.");
+            }
+          }}
+        />
         {session?.user && (
-          <div className="flex justify-end gap-2 mt-1">
-            <div className="flex items-center gap-1">
-              <label htmlFor="secretYn" className="text-gray-500 text-[12px]">
-                비밀댓글
-              </label>
-              <input type="checkbox" id="secretYn" {...register("secretYn")} />
-            </div>
-            <button
-              className="flex self-center bg-gray-300 text-black px-3 py-2 rounded-sm font-bold text-sm cursor-pointer hover:bg-green-600 transition"
+          <div className="flex justify-end items-center gap-3 mt-3">
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+              <input
+                type="checkbox"
+                className="accent-primary w-3.5 h-3.5"
+                {...register("secretYn")}
+              />
+              Secret
+            </label>
+            <Button
+              type="submit"
+              size="sm"
+              className="rounded-lg px-5"
               disabled={isCommenting}
             >
-              {isCommenting ? "등록중" : "등록"}
-            </button>
+              {isCommenting ? "Posting..." : "Post"}
+            </Button>
           </div>
         )}
       </form>

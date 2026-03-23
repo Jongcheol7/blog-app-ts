@@ -80,6 +80,10 @@ model Blog {
   blogTags  BlogTags[]
   videos    BlogVideo[]
   blogViews BlogViews[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([categoryId])
 }
 
 model BlogLikes {
@@ -127,6 +131,9 @@ model Comment {
 
   user User @relation(fields:[userId], references:[id])
   blog Blog @relation(fields:[blogId], references:[id])
+
+  @@index([blogId])
+  @@index([userId])
 }
 
 model Category {
@@ -146,6 +153,8 @@ model Guestbook {
   deletedAt  DateTime?
 
   user       User    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model BlogVideo {

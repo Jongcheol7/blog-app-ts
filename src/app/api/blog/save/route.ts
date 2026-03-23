@@ -50,8 +50,18 @@ export async function POST(request: Request) {
       { status: 401 }
     );
   }
-  console.log("태그 저장전");
   try {
+    // 수정 시 소유자 확인
+    if (id) {
+      const existingBlog = await prisma.blog.findUnique({ where: { id } });
+      if (!existingBlog) {
+        return NextResponse.json({ error: "존재하지 않는 글입니다." }, { status: 404 });
+      }
+      if (existingBlog.userId !== session.user.id && !session.user.isAdmin) {
+        return NextResponse.json({ error: "수정 권한이 없습니다." }, { status: 403 });
+      }
+    }
+
     // Tags 저장
     const tagResults = await Promise.all(
       tags.map((tag: string) =>
@@ -137,7 +147,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("글 저장에 실패했습니다." + err);
     return NextResponse.json(
-      { error: "글 저장에 실패했습니다.: " + err },
+      { error: "글 저장에 실패했습니다." },
       { status: 500 }
     );
   }

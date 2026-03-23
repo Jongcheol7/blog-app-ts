@@ -10,12 +10,26 @@ const s3 = new S3Client({
   },
 });
 
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/svg+xml",
+];
+
 export async function POST(request: Request) {
   const { fileType, folder } = await request.json();
   if (!fileType) {
     return NextResponse.json({ error: "fileType is empty" }, { status: 400 });
   }
-  const ext = fileType?.split("/")[1] || "jpg";
+  if (!ALLOWED_IMAGE_TYPES.includes(fileType)) {
+    return NextResponse.json(
+      { error: "허용되지 않는 파일 형식입니다." },
+      { status: 400 }
+    );
+  }
+  const ext = fileType.split("/")[1] || "jpg";
 
   const envPrefix = process.env.NODE_ENV === "production" ? "prod" : "dev";
   const fileName = `blog/${envPrefix}/${folder}/${Date.now()}.${ext}`;

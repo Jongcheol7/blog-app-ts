@@ -4,7 +4,7 @@ import { useMobileStore } from "@/store/useMobileStore";
 import HeaderLogo from "./HeaderLogo";
 import HeaderMobileNav from "./HeaderMobileNav";
 import HeaderDesktopNav from "./HeaderDesktopNav";
-import { Search } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import SearchGroup from "./SearchGroup";
 
@@ -13,41 +13,38 @@ export default function Header() {
   const { isMobile, setIsMobile } = useMobileStore();
   const [searchClick, setSearchClick] = useState(false);
 
-  // window 사이즈를 통한 상태변경
   useEffect(() => {
     const updateMobileDisplay = () => {
-      if (window.innerWidth < 800) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
+      setIsMobile(window.innerWidth < 800);
     };
-    // 초기실행
     updateMobileDisplay();
-    // 리스너 등록
     window.addEventListener("resize", updateMobileDisplay);
-    // 클린업
     return () => window.removeEventListener("resize", updateMobileDisplay);
   }, [setIsMobile]);
 
   return (
-    <header
-      className={`relative flex items-center  px-1 py-4 pb-10 ${
-        isMobile ? "justify-center" : "justify-between"
-      }`}
-    >
+    <header className="sticky top-0 z-40 glass border-b border-border/50 flex items-center justify-between px-4 py-3 mb-8 -mx-4 sm:-mx-6 lg:-mx-8">
       <HeaderLogo />
 
       {!isMobile && <HeaderDesktopNav />}
+
       {isMobile && (
-        <div className="absolute flex  gap-1 right-2 items-center text-2xl font-bold z-50 cursor-pointer">
-          <Search
-            className="mt-1"
+        <div className="flex items-center gap-2">
+          <button
+            className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             onClick={() => setSearchClick(!searchClick)}
-          />
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</button>
+          >
+            <Search className="w-5 h-5" />
+          </button>
+          <button
+            className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
         </div>
       )}
+
       <AnimatePresence>
         {isMobile && isMenuOpen && (
           <HeaderMobileNav setIsMenuOpen={setIsMenuOpen} />

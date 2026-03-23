@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-16 text-gray-800">
-      {/* 1️⃣ 프로필 섹션 */}
+    <div className="max-w-3xl mx-auto px-6 py-16 text-foreground">
+      {/* Profile */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -16,25 +16,26 @@ export default function AboutPage() {
         <img
           src="/profile.jpg"
           alt="Profile"
-          className="w-32 h-32 rounded-full object-cover shadow-md border border-gray-200"
+          className="w-36 h-36 rounded-2xl object-cover shadow-lg ring-4 ring-background"
         />
-        <h1 className="text-3xl font-semibold">Jongcheol Lee</h1>
-        <p className="text-gray-500 text-sm">
-          Developer who keeps learning and recording 🌿
+        <h1 className="text-4xl font-bold tracking-tight">Jongcheol Lee</h1>
+        <p className="text-muted-foreground text-base font-light">
+          Developer who keeps learning and recording
         </p>
       </motion.section>
 
-      {/* 2️⃣ 소개 섹션 */}
+      {/* About sections */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="mt-16 space-y-10 leading-relaxed"
+        className="mt-16 space-y-12 leading-relaxed"
       >
-        {/* About Me */}
         <div>
-          <h2 className="text-xl font-semibold mb-3">👋 About Me</h2>
-          <p className="text-gray-700">
+          <h2 className="text-xl font-semibold mb-4 text-foreground">
+            About Me
+          </h2>
+          <p className="text-muted-foreground leading-relaxed text-base">
             안녕하세요. 매일 조금씩 배우고 성장하고 싶은 개발자, 종철입니다.
             <br />
             <br />
@@ -45,10 +46,11 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* What I Do */}
         <div>
-          <h2 className="text-xl font-semibold mb-3">💻 What I Do</h2>
-          <p className="text-gray-700">
+          <h2 className="text-xl font-semibold mb-4 text-foreground">
+            What I Do
+          </h2>
+          <p className="text-muted-foreground leading-relaxed text-base">
             평일에는 Java와 Spring을 사용하는 SI/SM 프로젝트에서 일하고 있고,
             퇴근 후에는 프론트엔드 공부와 개인 프로젝트를 통해 새로운 기술을
             배우며 성장하고 있습니다.
@@ -58,10 +60,11 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* My Values */}
         <div>
-          <h2 className="text-xl font-semibold mb-3">🌱 My Values</h2>
-          <p className="text-gray-700">
+          <h2 className="text-xl font-semibold mb-4 text-foreground">
+            My Values
+          </h2>
+          <p className="text-muted-foreground leading-relaxed text-base">
             완벽하지 않아도 괜찮다고 믿습니다. 중요한 건, 어제보다 오늘
             조금이라도 나아지는 것.
             <br />
@@ -76,30 +79,22 @@ export default function AboutPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.4 }}
-        className="flex justify-center gap-6 mt-16 text-gray-500"
+        className="flex justify-center gap-4 mt-16"
       >
         <a
           href="https://github.com/Jongcheol7"
           target="_blank"
           rel="noreferrer"
-          className="hover:text-black transition"
+          className="p-3 rounded-full bg-secondary hover:bg-accent hover:text-primary transition-all text-muted-foreground"
         >
-          <Github className="w-6 h-6" />
+          <Github className="w-5 h-5" />
         </a>
         <a
           href="mailto:whdcjf8172@gmail.com"
-          className="hover:text-black transition"
+          className="p-3 rounded-full bg-secondary hover:bg-accent hover:text-primary transition-all text-muted-foreground"
         >
-          <Mail className="w-6 h-6" />
+          <Mail className="w-5 h-5" />
         </a>
-        {/* <a
-          href="https://linkedin.com"
-          target="_blank"
-          rel="noreferrer"
-          className="hover:text-black transition"
-        >
-          <Linkedin className="w-6 h-6" />
-        </a> */}
       </motion.section>
     </div>
   );

@@ -5,6 +5,8 @@ import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import imageCompression from "browser-image-compression";
+import { ImagePlus, RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   pickedImage: File | null | string;
@@ -12,19 +14,14 @@ type Props = {
 };
 
 export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
-  console.log("pickedImage : ", pickedImage);
   const onDrop = useCallback(
     async (files: File[]) => {
-      debugger;
-
-      // 수정화면일때는 사진을 교체시 S3에서 제거.
       if (
         typeof pickedImage === "string" &&
         pickedImage.startsWith(
           process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN_NAME as string
         )
       ) {
-        debugger;
         fetch("/api/blog/upload/delete", {
           method: "POST",
           body: JSON.stringify({ imageUrl: pickedImage, folder: "thumbnail" }),
@@ -32,14 +29,12 @@ export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
         });
       }
 
-      console.log("file : ", files);
-
       if (files.length > 1) {
-        toast.error("사진은 한장만 첨부 가능합니다.");
+        toast.error("Only one image allowed.");
         return false;
       }
       if (!files[0].type.startsWith("image/")) {
-        toast.error("사진만 첨부 가능합니다.");
+        toast.error("Only image files allowed.");
         return false;
       }
 
@@ -63,43 +58,42 @@ export default function ImagePicker({ pickedImage, setPickedImage }: Props) {
   });
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-3">
       <div {...getRootProps({})} onClick={open}>
         {!pickedImage ? (
-          <div className="font-light text-center w-30 h-24 border border-gray-300 py-2 text-sm">
-            {isDragActive ? (
-              <p>Attaching..</p>
-            ) : (
-              <p>Thumbnail Picture Attach</p>
+          <div
+            className={cn(
+              "flex flex-col items-center justify-center w-40 h-28 rounded-xl border-2 border-dashed border-border",
+              "hover:border-primary/50 hover:bg-accent/50 transition-all cursor-pointer group",
+              isDragActive && "border-primary bg-primary/5"
             )}
+          >
+            <ImagePlus className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
+            <span className="text-xs text-muted-foreground mt-2">
+              {isDragActive ? "Drop here" : "Thumbnail"}
+            </span>
           </div>
         ) : (
-          <Image
-            src={
-              typeof pickedImage === "string"
-                ? pickedImage
-                : URL.createObjectURL(pickedImage)
-            }
-            alt="Selected Image"
-            width={150}
-            height={120}
-            className="border object-cover"
-          />
+          <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-border group cursor-pointer">
+            <Image
+              src={
+                typeof pickedImage === "string"
+                  ? pickedImage
+                  : URL.createObjectURL(pickedImage)
+              }
+              alt="Selected Image"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              <RefreshCw className="w-5 h-5 text-white" />
+            </div>
+          </div>
         )}
-        <input
-          {...getInputProps()}
-          type="file"
-          className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-green-100 file:text-green-700 hover:file:bg-green-200"
-        />
+        <input {...getInputProps()} type="file" className="hidden" />
       </div>
-      <Button
-        variant={"secondary"}
-        onClick={(e) => {
-          e.preventDefault();
-          open();
-        }}
-      >
-        사진 첨부
+      <Button variant="outline" size="sm" onClick={(e) => { e.preventDefault(); open(); }}>
+        Upload
       </Button>
     </div>
   );

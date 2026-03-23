@@ -1,5 +1,6 @@
 "use client";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useGuestbookMutation } from "@/hooks/useGuestbookMutation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -13,7 +14,6 @@ export default function GuestbookForm() {
   const { register, setValue, handleSubmit } = useForm<Prop>();
   const { mutate, isPending, isSuccess } = useGuestbookMutation();
   const onSubmit = (data: Prop) => {
-    console.log(data);
     mutate({
       content: data.content,
       secretYn: data.secretYn,
@@ -28,18 +28,26 @@ export default function GuestbookForm() {
   }, [isSuccess, setValue]);
 
   return (
-    <div className="mt-3">
+    <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex justify-between items-center mb-1">
-          <div className="flex gap-2">
-            <p className="text-gray-600 text-sm">비밀글 설정</p>
-            <input {...register("secretYn")} type="checkbox" />
-          </div>
-          <button className="right-1 bottom-1 flex self-center bg-gray-300 text-black px-2 py-1 rounded-sm font-bold text-sm cursor-pointer hover:bg-green-600 transition">
-            {isPending ? "등록중" : "등록"}
-          </button>
+        <Textarea
+          {...register("content")}
+          placeholder="Write something..."
+          className="min-h-[100px] rounded-xl resize-none bg-secondary/50 border-0 focus-visible:bg-background focus-visible:ring-1 focus-visible:ring-primary/30 transition-all placeholder:text-muted-foreground"
+        />
+        <div className="flex items-center justify-between mt-3">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+            <input
+              {...register("secretYn")}
+              type="checkbox"
+              className="accent-primary w-3.5 h-3.5"
+            />
+            Secret
+          </label>
+          <Button type="submit" size="sm" className="rounded-lg px-5" disabled={isPending}>
+            {isPending ? "Posting..." : "Post"}
+          </Button>
         </div>
-        <Textarea {...register("content")} placeholder="내용을 입력하세요" />
       </form>
     </div>
   );

@@ -1,9 +1,11 @@
-import NavLink from "./NavLink";
+import Link from "next/link";
 
 export default function HeaderLogo() {
   return (
-    <NavLink href={"/"}>
-      <p className="text-3xl font-bold text-black">Jongcheol Lee</p>
-    </NavLink>
+    <Link href="/">
+      <p className="text-xl font-bold tracking-tight text-foreground hover:text-primary transition-colors duration-200">
+        Jongcheol Lee
+      </p>
+    </Link>
   );
 }

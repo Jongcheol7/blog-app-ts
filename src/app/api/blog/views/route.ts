@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
   if (!blogId) {
     console.error("글 번호가 없습니다.");
-    return NextResponse.json({ error: "글 번호가 없습니다." }, { status: 401 });
+    return NextResponse.json({ error: "글 번호가 없습니다." }, { status: 400 });
   }
 
   const session = await getServerSession(authOptions);

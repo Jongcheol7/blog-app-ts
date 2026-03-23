@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
+
+function calcReadingTime(html: string): string {
+  const text = html.replace(/<[^>]+>/g, " ").trim();
+  const words = text.split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -7,68 +16,94 @@ export async function GET(request: Request) {
   const limit = Number(searchParams.get("limit"));
   const keyword = searchParams.get("keyword");
   const category = Number(searchParams.get("category"));
+  const tag = searchParams.get("tag");
 
-  console.log("BlogLists cursor : ", cursor);
-  console.log("BlogLists limit : ", limit);
-  console.log("BlogLists keyword : ", keyword);
-  console.log("BlogLists category : ", category);
+  const session = await getServerSession(authOptions);
+
+  const includeOpts = {
+    blogTags: { include: { tag: true } },
+  };
+
+  // 비공개 글은 작성자 또는 관리자만 볼 수 있음
+  const privateFilter = session?.user?.isAdmin
+    ? {}
+    : session?.user?.id
+      ? { OR: [{ privateYn: false }, { userId: session.user.id }] }
+      : { privateYn: false };
+
+  const baseWhere = {
+    deletedAt: null,
+    ...privateFilter,
+    ...(category !== 0 ? { categoryId: category } : {}),
+    ...(keyword
+      ? {
+          OR: [
+            { title: { contains: keyword, mode: "insensitive" as const } },
+            { content: { contains: keyword, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+    ...(tag ? { blogTags: { some: { tag: { name: tag } } } } : {}),
+  };
 
   try {
-    // 첫페이지일때
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mapPost = (post: any) => ({
+      id: post.id,
+      title: post.title,
+      imageUrl: post.imageUrl,
+      views: post.views,
+      privateYn: post.privateYn,
+      pinnedYn: post.pinnedYn,
+      createdAt: post.createdAt,
+      blogTags: post.blogTags,
+      readingTime: calcReadingTime(post.content),
+    });
+
     if (!cursor) {
       const pinned = await prisma.blog.findFirst({
-        where: { deletedAt: null, pinnedYn: true },
+        where: { deletedAt: null, pinnedYn: true, ...privateFilter },
         orderBy: { id: "desc" },
+        include: includeOpts,
       });
-      const result = await prisma.blog.findMany({
+      const posts = await prisma.blog.findMany({
         where: {
-          deletedAt: null,
+          ...baseWhere,
           pinnedYn: false,
-          ...(category !== 0 ? { categoryId: category } : {}),
-          ...(keyword
-            ? {
-                OR: [
-                  { title: { contains: keyword, mode: "insensitive" } },
-                  { content: { contains: keyword, mode: "insensitive" } },
-                ],
-              }
-            : {}),
         },
         orderBy: { id: "desc" },
         take: limit,
+        include: includeOpts,
       });
+      const result = posts.map(mapPost);
       const nextCursor =
-        result.length > 0 ? String(result[result.length - 1].id) : null;
-      return NextResponse.json({ pinned, result, nextCursor });
+        posts.length > 0 ? String(posts[posts.length - 1].id) : null;
+      return NextResponse.json({
+        pinned: pinned ? mapPost(pinned) : null,
+        result,
+        nextCursor,
+      });
     } else {
-      // 그 다음 페이지부터
-      const result = await prisma.blog.findMany({
+      const posts = await prisma.blog.findMany({
         where: {
-          deletedAt: null,
+          ...baseWhere,
           pinnedYn: false,
-          ...(category !== 0 ? { categoryId: category } : {}),
-          ...(keyword
-            ? {
-                OR: [
-                  { title: { contains: keyword, mode: "insensitive" } },
-                  { content: { contains: keyword, mode: "insensitive" } },
-                ],
-              }
-            : {}),
         },
         orderBy: { id: "desc" },
         cursor: { id: Number(cursor) },
         skip: 1,
         take: limit,
+        include: includeOpts,
       });
+      const result = posts.map(mapPost);
       const nextCursor =
-        result.length > 0 ? String(result[result.length - 1].id) : null;
+        posts.length > 0 ? String(posts[posts.length - 1].id) : null;
       return NextResponse.json({ pinned: null, result, nextCursor });
     }
   } catch (err) {
-    console.error("블로그 조회에 실패했습니다." + err);
+    console.error("Blog list query failed:", err);
     return NextResponse.json(
-      { error: "블로그 조회에 실패했습니다." },
+      { error: "Blog list query failed" },
       { status: 500 }
     );
   }

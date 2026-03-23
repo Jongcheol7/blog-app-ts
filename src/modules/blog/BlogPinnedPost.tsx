@@ -3,54 +3,54 @@ import Image from "next/image";
 import { TimeTransform } from "../common/TimeTransform";
 import { useRouter } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
-import { useMobileStore } from "@/store/useMobileStore";
 import { useBlogViewsMutation } from "@/hooks/useBlogViews";
+import { useSearchStore } from "@/store/useSearchStore";
+import HighlightText from "../common/HighlightText";
 
 export default function BlogPinnedPost({ pinnedData }: PinnedPost) {
-  const { isMobile } = useMobileStore();
   const { mutateAsync: viewMutate } = useBlogViewsMutation();
-
   const router = useRouter();
+  const { keyword } = useSearchStore();
+
+  if (!pinnedData) return null;
+
   return (
-    <div>
-      {pinnedData && (
-        <div
-          className="flex border-b pb-1 cursor-pointer"
-          onClick={async () => {
-            await viewMutate(pinnedData.id);
-            router.push(`details/${pinnedData.id}`);
+    <div
+      className="relative w-full rounded-2xl overflow-hidden cursor-pointer group mb-8"
+      onClick={async () => {
+        await viewMutate(pinnedData.id);
+        router.push(`details/${pinnedData.id}`);
+      }}
+    >
+      <div className="relative w-full aspect-[21/9] sm:aspect-[2.5/1]">
+        <Image
+          src={pinnedData.imageUrl || "/globe.svg"}
+          alt={pinnedData.title || "Featured post"}
+          fill
+          priority
+          loader={({ src }) => src}
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      </div>
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+      {/* Text overlay */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2 line-clamp-2">
+          <HighlightText text={pinnedData.title} keyword={keyword} />
+        </h2>
+        <p
+          className="text-sm text-white/70 line-clamp-2 mb-3 max-w-2xl"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(pinnedData.content),
           }}
-        >
-          <div
-            className={`relative w-[55%] mb-10 ${
-              isMobile ? "h-[230px]" : "h-[330px]"
-            }`}
-          >
-            <Image
-              src={pinnedData.imageUrl || "/globe.svg"}
-              alt={pinnedData.title || "게시글 대표 이미지"}
-              fill
-              priority
-              loader={({ src }) => src}
-              className="shadow-2xl"
-            />
-          </div>
-          <div className="flex-1 ml-3 flex flex-col">
-            <p className="font-bold text-2xl mb-2 text-gray-700">
-              {pinnedData.title}
-            </p>
-            <p
-              className="line-clamp-2 text-gray-500"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(pinnedData.content),
-              }}
-            ></p>
-            <p className="self-end">
-              {TimeTransform(pinnedData.createdAt).date}
-            </p>
-          </div>
-        </div>
-      )}
+        />
+        <p className="text-xs text-white/50 font-medium">
+          {TimeTransform(pinnedData.createdAt).date}
+        </p>
+      </div>
     </div>
   );
 }

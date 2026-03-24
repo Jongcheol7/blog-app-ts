@@ -6,6 +6,7 @@ import BlogCard from "./BlogCard";
 import { useSearchStore } from "@/store/useSearchStore";
 import BlogPinnedPost from "./BlogPinnedPost";
 import { Loader2 } from "lucide-react";
+import ScrollReveal from "../common/ScrollReveal";
 
 export default function BlogMain() {
   const observerRef = useRef(null);
@@ -17,7 +18,6 @@ export default function BlogMain() {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    refetch,
     isLoading,
   } = useBlogLists({ keyword, category, tag });
 
@@ -74,6 +74,11 @@ export default function BlogMain() {
     );
   }
 
+  // Split blogs into sections for mixed layout
+  const featurePosts = allBlogs.slice(0, 2);
+  const listPosts = allBlogs.slice(2, 6);
+  const gridPosts = allBlogs.slice(6);
+
   return (
     <div className="pt-10">
       {tag && (
@@ -87,11 +92,61 @@ export default function BlogMain() {
           </button>
         </div>
       )}
+
+      {/* Pinned Post */}
       <BlogPinnedPost pinnedData={pinnedData} />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 py-8 stagger-children">
-        {allBlogs &&
-          allBlogs.map((blog) => <BlogCard key={blog.id} blog={blog} />)}
-      </div>
+
+      {/* Feature Section — 2 large posts side by side */}
+      {featurePosts.length > 0 && (
+        <ScrollReveal>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-16">
+            {featurePosts.map((blog, i) => (
+              <ScrollReveal key={blog.id} delay={i * 100}>
+                <BlogCard blog={blog} variant="feature" />
+              </ScrollReveal>
+            ))}
+          </div>
+        </ScrollReveal>
+      )}
+
+      {/* List Section — editorial style */}
+      {listPosts.length > 0 && (
+        <ScrollReveal>
+          <div className="mb-16">
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Latest</h2>
+              <div className="flex-1 h-px bg-border/50" />
+            </div>
+            <div>
+              {listPosts.map((blog, i) => (
+                <ScrollReveal key={blog.id} delay={i * 80}>
+                  <BlogCard blog={blog} variant="list" />
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+      )}
+
+      {/* Grid Section — card grid */}
+      {gridPosts.length > 0 && (
+        <ScrollReveal>
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">More Posts</h2>
+              <div className="flex-1 h-px bg-border/50" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {gridPosts.map((blog, i) => (
+                <ScrollReveal key={blog.id} delay={i * 80}>
+                  <BlogCard blog={blog} variant="card" />
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+      )}
+
       <div ref={observerRef} />
       {isFetchingNextPage && (
         <div className="flex justify-center py-8">

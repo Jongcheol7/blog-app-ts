@@ -36,14 +36,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-5xl px-4 sm:px-6 lg:px-8 mx-auto min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-6xl px-5 sm:px-8 lg:px-10 mx-auto min-h-screen`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider>
             <ReactQueryProvider>
               <Header />
               <CategoryNav />
-              <main className="animate-fade-in pb-16">{children}</main>
+              <main className="animate-fade-in pb-20">{children}</main>
               <Toaster position="bottom-center" richColors />
             </ReactQueryProvider>
           </SessionProvider>

@@ -14,10 +14,10 @@ export default function HeaderDesktopNav() {
   const isAdmin = session?.user.isAdmin;
 
   return (
-    <nav className="flex items-center gap-1">
-      <div className="flex items-center gap-1 text-sm font-medium">
+    <nav className="flex items-center gap-0.5">
+      <div className="flex items-center gap-0.5 text-sm font-medium">
         <button
-          className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-pointer"
+          className="p-2.5 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer"
           onClick={() => setSearchClick(!searchClick)}
         >
           <Search className="w-[18px] h-[18px]" />
@@ -29,6 +29,8 @@ export default function HeaderDesktopNav() {
         {isAdmin && <NavLink href="/admin">Admin</NavLink>}
         {isAdmin && <NavLink href="/write">Write</NavLink>}
 
+        <div className="w-px h-5 bg-border mx-1.5" />
+
         <button
           onClick={async () => {
             if (session?.user) {
@@ -37,7 +39,7 @@ export default function HeaderDesktopNav() {
               await signIn();
             }
           }}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-200 cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 cursor-pointer"
         >
           {session ? (
             <>

@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
+export const revalidate = 3600; // 1시간 캐시
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl =
     process.env.NEXTAUTH_URL || "https://blog-app-ts-iota.vercel.app";

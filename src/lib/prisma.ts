@@ -14,9 +14,8 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: ["error", "warn"], // ← 에러 추적용 (선택)
+    log: ["error", "warn"],
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+// 모든 환경에서 싱글턴 유지 (Vercel serverless 커넥션 풀 초과 방지)
+globalForPrisma.prisma = prisma;

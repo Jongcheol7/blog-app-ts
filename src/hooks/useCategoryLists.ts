@@ -8,5 +8,6 @@ export function useCategoryLists() {
       const res = await axios.get("/api/blog/category");
       return res.data;
     },
+    staleTime: 5 * 60 * 1000,
   });
 }

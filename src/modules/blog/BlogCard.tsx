@@ -18,8 +18,8 @@ export default function BlogCard({ blog }: Props) {
   return (
     <div
       className="card-bezel cursor-pointer group"
-      onClick={async () => {
-        await viewMutate(blog.id);
+      onClick={() => {
+        viewMutate(blog.id);
         router.push(`details/${blog.id}`);
       }}
     >

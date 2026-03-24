@@ -3,7 +3,6 @@ import { useBlogLists } from "@/hooks/useBlogLists";
 import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import BlogCard from "./BlogCard";
-import { useQueryClient } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import BlogPinnedPost from "./BlogPinnedPost";
 import { Loader2 } from "lucide-react";
@@ -21,7 +20,6 @@ export default function BlogMain() {
     refetch,
     isLoading,
   } = useBlogLists({ keyword, category, tag });
-  const queryClient = useQueryClient();
 
   const pinnedData = useMemo(() => {
     if (!data?.pages?.length) return [];
@@ -32,11 +30,6 @@ export default function BlogMain() {
   const allBlogs = useMemo(() => {
     return data?.pages.flatMap((page) => page.result) ?? [];
   }, [data]);
-
-  useEffect(() => {
-    queryClient.removeQueries({ queryKey: ["blogLists"] });
-    refetch();
-  }, [keyword, category, tag, queryClient, refetch]);
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) {

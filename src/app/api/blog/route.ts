@@ -3,12 +3,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
 
-function calcReadingTime(html: string): string {
-  const text = html.replace(/<[^>]+>/g, " ").trim();
-  const words = text.split(/\s+/).filter(Boolean).length;
-  const minutes = Math.max(1, Math.ceil(words / 200));
-  return `${minutes} min read`;
-}
+const selectFields = {
+  id: true,
+  title: true,
+  imageUrl: true,
+  views: true,
+  privateYn: true,
+  pinnedYn: true,
+  createdAt: true,
+  blogTags: { include: { tag: true } },
+} as const;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,11 +24,6 @@ export async function GET(request: Request) {
 
   const session = await getServerSession(authOptions);
 
-  const includeOpts = {
-    blogTags: { include: { tag: true } },
-  };
-
-  // 비공개 글은 작성자 또는 관리자만 볼 수 있음
   const privateFilter = session?.user?.isAdmin
     ? {}
     : session?.user?.id
@@ -47,58 +46,41 @@ export async function GET(request: Request) {
   };
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mapPost = (post: any) => ({
-      id: post.id,
-      title: post.title,
-      imageUrl: post.imageUrl,
-      views: post.views,
-      privateYn: post.privateYn,
-      pinnedYn: post.pinnedYn,
-      createdAt: post.createdAt,
-      blogTags: post.blogTags,
-      readingTime: calcReadingTime(post.content),
-    });
-
     if (!cursor) {
-      const pinned = await prisma.blog.findFirst({
-        where: { deletedAt: null, pinnedYn: true, ...privateFilter },
-        orderBy: { id: "desc" },
-        include: includeOpts,
-      });
-      const posts = await prisma.blog.findMany({
-        where: {
-          ...baseWhere,
-          pinnedYn: false,
-        },
-        orderBy: { id: "desc" },
-        take: limit,
-        include: includeOpts,
-      });
-      const result = posts.map(mapPost);
+      const [pinned, posts] = await Promise.all([
+        prisma.blog.findFirst({
+          where: { deletedAt: null, pinnedYn: true, ...privateFilter },
+          orderBy: { id: "desc" },
+          select: { ...selectFields, content: true },
+        }),
+        prisma.blog.findMany({
+          where: { ...baseWhere, pinnedYn: false },
+          orderBy: { id: "desc" },
+          take: limit,
+          select: selectFields,
+        }),
+      ]);
+
       const nextCursor =
         posts.length > 0 ? String(posts[posts.length - 1].id) : null;
       return NextResponse.json({
-        pinned: pinned ? mapPost(pinned) : null,
-        result,
+        pinned: pinned || null,
+        result: posts,
         nextCursor,
       });
     } else {
       const posts = await prisma.blog.findMany({
-        where: {
-          ...baseWhere,
-          pinnedYn: false,
-        },
+        where: { ...baseWhere, pinnedYn: false },
         orderBy: { id: "desc" },
         cursor: { id: Number(cursor) },
         skip: 1,
         take: limit,
-        include: includeOpts,
+        select: selectFields,
       });
-      const result = posts.map(mapPost);
+
       const nextCursor =
         posts.length > 0 ? String(posts[posts.length - 1].id) : null;
-      return NextResponse.json({ pinned: null, result, nextCursor });
+      return NextResponse.json({ pinned: null, result: posts, nextCursor });
     }
   } catch (err) {
     console.error("Blog list query failed:", err);

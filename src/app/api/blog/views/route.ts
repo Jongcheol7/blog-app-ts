@@ -7,25 +7,16 @@ export async function POST(req: Request) {
   const { blogId } = await req.json();
 
   if (!blogId) {
-    console.error("글 번호가 없습니다.");
     return NextResponse.json({ error: "글 번호가 없습니다." }, { status: 400 });
   }
 
   const session = await getServerSession(authOptions);
 
-  // 헤더에서 IP주소 가져오기
   const forwardedFor = req.headers.get("x-forwarded-for");
   const realIp = req.headers.get("x-real-ip");
   const ip = forwardedFor?.split(",")[0] || realIp || "unknown";
 
-  console.log("blogId : ", blogId);
-  console.log("forwardedFor : ", forwardedFor);
-  console.log("realIp : ", realIp);
-  console.log("ip : ", ip);
-  console.log("session.user : ", session?.user);
-
   try {
-    // 최근 30분 내 조회한적이 있는지(중복확인)
     const recentView = await prisma.blogViews.findFirst({
       where: {
         blogId,
@@ -34,10 +25,10 @@ export async function POST(req: Request) {
           gte: new Date(Date.now() - 30 * 60 * 1000),
         },
       },
+      select: { id: true },
     });
 
     if (recentView) {
-      console.log("중복조회: 최근에 이미 조회했습니다. 카운트 생략");
       return NextResponse.json(
         { message: "최근에 이미 조회했습니다." },
         { status: 200 }
@@ -46,7 +37,7 @@ export async function POST(req: Request) {
 
     await prisma.blogViews.create({
       data: {
-        blogId: blogId,
+        blogId,
         userId: session?.user?.id ?? null,
         ipAddress: ip,
       },

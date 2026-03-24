@@ -10,7 +10,7 @@ type Prop = {
 
 export function useBlogLists({ keyword, category, tag }: Prop) {
   return useInfiniteQuery({
-    queryKey: ["blogLists"],
+    queryKey: ["blogLists", { keyword, category, tag }],
     queryFn: async ({ pageParam = null }) => {
       const res = await axios.get("/api/blog", {
         params: {

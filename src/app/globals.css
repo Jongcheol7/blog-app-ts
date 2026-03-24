@@ -172,14 +172,12 @@
 
 /* ── Floating Glass Navigation (Supanova) ── */
 .glass-nav {
-  background: oklch(1 0 0 / 50%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: oklch(1 0 0);
   border: 1px solid oklch(0 0 0 / 5%);
   box-shadow: 0 4px 30px -10px oklch(0 0 0 / 8%);
 }
 .dark .glass-nav {
-  background: oklch(0.08 0.01 260 / 50%);
+  background: oklch(0.08 0.01 260);
   border: 1px solid oklch(1 0 0 / 8%);
   box-shadow: 0 4px 30px -10px oklch(0 0 0 / 30%);
 }
@@ -219,6 +217,20 @@
 /* ── Supanova transition standard ── */
 .transition-supanova {
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Image zoom on hover (premium feel) ── */
+.img-zoom img {
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.img-zoom:hover img {
+  transform: scale(1.05);
+}
+
+/* ── Gradient line separator ── */
+.gradient-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, oklch(0.6 0 0 / 30%), transparent);
 }
 
 /* ── Editor / ProseMirror ── */

@@ -1,18 +1,18 @@
 "use client";
 import { useBlogDetails } from "@/hooks/useBlogDetails";
-import CategoryMain from "../Category/CategoryMain";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Editor from "../common/Editor";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CommentForm from "../Comment/CommentForm";
 import CommentLists from "../Comment/CommentLists";
 import { useSession } from "next-auth/react";
-import { Eye, Lock, Pin, Clock, Trash2 } from "lucide-react";
+import { Eye, Lock, Pin, Clock, Trash2, Pencil, ArrowLeft } from "lucide-react";
 import { getReadingTime } from "../common/readingTime";
 import { useDeleteBlogMutation } from "@/hooks/useDeleteBlogMutation";
 import { useSearchStore } from "@/store/useSearchStore";
+import { TimeTransform } from "../common/TimeTransform";
 import TableOfContents from "./TableOfContents";
 import PostNavigation from "./PostNavigation";
 import ShareButtons from "./ShareButtons";
@@ -94,150 +94,180 @@ export default function BlogDetails({ id }: { id: string }) {
     return () => clearTimeout(timer);
   }, [data]);
 
+  const details = data?.details;
+
   return (
     <>
-      {data && data.details && (
-        <div className="max-w-5xl mx-auto py-8 animate-fade-in-up">
-          <div className="flex gap-8">
-            {/* Main content */}
-            <div className="flex-1 min-w-0 max-w-3xl">
-              {/* Top bar */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <CategoryMain
-                    category={data.details.categoryId}
-                    setCategory={() => {}}
-                    readYn={true}
-                  />
-                  <div className="flex items-center gap-2">
-                    {data.details.privateYn && (
-                      <Badge variant="secondary" className="gap-1">
-                        <Lock className="w-3 h-3" />
-                        Private
-                      </Badge>
-                    )}
-                    {data.details.pinnedYn && (
-                      <Badge variant="secondary" className="gap-1">
-                        <Pin className="w-3 h-3" />
-                        Pinned
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                {isAdmin && (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push(`/edit/${id}`)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-destructive hover:bg-destructive hover:text-white"
-                      onClick={() => setShowDeleteConfirm(true)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
+      {details && (
+        <article className="animate-fade-in-up" style={{ wordBreak: "keep-all" }}>
 
-              {/* Delete confirmation */}
-              {showDeleteConfirm && (
-                <div className="mb-6 p-4 rounded-xl border border-destructive/30 bg-destructive/5">
-                  <p className="text-sm font-medium mb-3">
-                    Are you sure you want to delete this post?
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => deleteMutate(data.details.id)}
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? "Deleting..." : "Delete"}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowDeleteConfirm(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              )}
+          {/* Hero image */}
+          {details.imageUrl && (
+            <div className="relative w-full aspect-[21/9] sm:aspect-[2.8/1] rounded-[2rem] overflow-hidden mb-10 img-zoom">
+              <Image
+                src={details.imageUrl}
+                alt={details.title}
+                fill
+                priority
+                className="object-cover"
+                loader={({ src }) => src}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-              {/* Title */}
-              <h1 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight mb-8">
-                {data.details.title}
-              </h1>
+              {/* Back button overlay */}
+              <button
+                onClick={() => router.push("/blog")}
+                className="absolute top-5 left-5 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-black/30 backdrop-blur-md text-white/80 text-sm font-medium hover:bg-black/50 transition-supanova cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                Back
+              </button>
+            </div>
+          )}
 
-              {/* Meta */}
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-8 pb-8 border-b border-border">
-                <div className="flex items-center gap-1.5">
-                  <Eye className="w-4 h-4" />
-                  <span>{data.details.views} views</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-4 h-4" />
-                  <span>{getReadingTime(data.details.content)}</span>
-                </div>
-                <ShareButtons title={data.details.title} />
-              </div>
+          <div className="relative">
 
-              {/* Tags */}
-              {data.details.blogTags && data.details.blogTags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {data.details.blogTags.map(
-                    (bt: { tag: { id: number; name: string } }) => (
-                      <Badge
-                        key={bt.tag.id}
-                        variant="secondary"
-                        className="cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors"
-                        onClick={() => {
-                          setTag(bt.tag.name);
-                          router.push("/blog");
-                        }}
-                      >
-                        # {bt.tag.name}
-                      </Badge>
-                    )
+                {/* Eyebrow: category + status badges */}
+                <div className="flex items-center gap-2.5 mb-5">
+                  {details.category?.name && (
+                    <span className="inline-flex items-center rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] font-medium bg-primary/10 text-primary">
+                      {details.category.name}
+                    </span>
+                  )}
+                  {details.privateYn && (
+                    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium bg-secondary text-muted-foreground">
+                      <Lock className="w-3 h-3" />
+                      Private
+                    </span>
+                  )}
+                  {details.pinnedYn && (
+                    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium bg-secondary text-muted-foreground">
+                      <Pin className="w-3 h-3" />
+                      Pinned
+                    </span>
                   )}
                 </div>
-              )}
 
-              {/* Mobile TOC */}
-              <TableOfContents contentRef={contentRef} />
+                {/* Title */}
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-6">
+                  {details.title}
+                </h1>
 
-              {/* Editor / Content */}
-              <div ref={contentRef} className="min-h-[300px] mb-12">
-                <Editor
-                  setEditor={setEditor}
-                  content={data.details.content}
-                  readOnly={true}
-                />
-              </div>
+                {/* Meta row */}
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-6">
+                  <span>{TimeTransform(details.createdAt).date}</span>
+                  <span className="text-border">·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <Eye className="w-3.5 h-3.5" />
+                    {details.views}
+                  </span>
+                  <span className="text-border">·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    {getReadingTime(details.content)}
+                  </span>
+                  <div className="ml-auto">
+                    <ShareButtons title={details.title} />
+                  </div>
+                </div>
 
-              {/* Prev/Next */}
-              <PostNavigation blogId={data.details.id} />
+                {/* Tags */}
+                {details.blogTags && details.blogTags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {details.blogTags.map(
+                      (bt: { tag: { id: number; name: string } }) => (
+                        <span
+                          key={bt.tag.id}
+                          className="text-[11px] px-2.5 py-0.5 rounded-full bg-secondary text-muted-foreground font-medium cursor-pointer hover:bg-primary/10 hover:text-primary transition-supanova"
+                          onClick={() => {
+                            setTag(bt.tag.name);
+                            router.push("/blog");
+                          }}
+                        >
+                          # {bt.tag.name}
+                        </span>
+                      )
+                    )}
+                  </div>
+                )}
 
-              {/* Comments */}
-              <div className="pt-8 border-t border-border">
-                <CommentForm blogId={data.details.id} />
-                <CommentLists blogId={data.details.id} />
-              </div>
-            </div>
+                {/* Gradient separator */}
+                <div className="gradient-line mb-10" />
 
-            {/* Desktop TOC sidebar */}
-            <div className="hidden lg:block w-56 shrink-0">
+                {/* Admin actions */}
+                {isAdmin && (
+                  <div className="flex items-center gap-2 mb-8">
+                    <button
+                      onClick={() => router.push(`/edit/${id}`)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary text-sm font-medium hover:bg-primary/10 hover:text-primary transition-supanova cursor-pointer"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary text-sm font-medium text-destructive hover:bg-destructive/10 transition-supanova cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Delete
+                    </button>
+                  </div>
+                )}
+
+                {/* Delete confirmation */}
+                {showDeleteConfirm && (
+                  <div className="mb-8 p-5 rounded-2xl ring-1 ring-destructive/20 bg-destructive/5">
+                    <p className="text-sm font-medium mb-3">
+                      Are you sure you want to delete this post?
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="rounded-full"
+                        onClick={() => deleteMutate(details.id)}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? "Deleting..." : "Delete"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="rounded-full"
+                        onClick={() => setShowDeleteConfirm(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Mobile TOC */}
+                <TableOfContents contentRef={contentRef} />
+
+                {/* Editor / Content */}
+                <div ref={contentRef} className="min-h-[300px] mb-16">
+                  <Editor
+                    setEditor={setEditor}
+                    content={details.content}
+                    readOnly={true}
+                  />
+                </div>
+
+                {/* Prev/Next */}
+                <PostNavigation blogId={details.id} />
+
+                {/* Comments */}
+                <div className="pt-10 mt-10 border-t border-border/60">
+                  <CommentForm blogId={details.id} />
+                  <CommentLists blogId={details.id} />
+                </div>
+            {/* Desktop TOC — floating right */}
+            <div className="hidden xl:block fixed right-[max(1rem,calc((100vw-80rem)/2+1rem))] top-24 w-52">
               <TableOfContents contentRef={contentRef} />
             </div>
           </div>
-        </div>
+        </article>
       )}
 
       {/* Image lightbox */}

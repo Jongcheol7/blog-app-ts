@@ -14,6 +14,7 @@ export async function GET(request: Request) {
       },
       include: {
         blogTags: { include: { tag: true } },
+        category: true,
       },
     });
 

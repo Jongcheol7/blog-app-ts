@@ -17,7 +17,7 @@ export default function BlogPinnedPost({ pinnedData }: PinnedPost) {
 
   return (
     <div
-      className="relative w-full rounded-[2rem] overflow-hidden cursor-pointer group mb-12"
+      className="relative w-full rounded-[2rem] overflow-hidden cursor-pointer group mb-2"
       onClick={() => {
         viewMutate(pinnedData.id);
         router.push(`details/${pinnedData.id}`);

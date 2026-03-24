@@ -1,60 +1,50 @@
 "use client";
 import { useBlogLists } from "@/hooks/useBlogLists";
-import { useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import BlogCard from "./BlogCard";
 import { useSearchStore } from "@/store/useSearchStore";
 import BlogPinnedPost from "./BlogPinnedPost";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import ScrollReveal from "../common/ScrollReveal";
 
+const PAGE_SIZE = 12;
+const SMALL_CARD_COUNT = 4;
+
 export default function BlogMain() {
-  const observerRef = useRef(null);
+  const [page, setPage] = useState(1);
   const { keyword, category, tag, setTag } = useSearchStore();
-  const {
-    data,
-    isError,
-    error,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-    isLoading,
-  } = useBlogLists({ keyword, category, tag });
 
-  const pinnedData = useMemo(() => {
-    if (!data?.pages?.length) return [];
-    const firstPinned = data.pages[0]?.pinned;
-    return firstPinned ? firstPinned : null;
-  }, [data]);
-
-  const allBlogs = useMemo(() => {
-    return data?.pages.flatMap((page) => page.result) ?? [];
-  }, [data]);
+  const prevCategory = useRef(category);
+  const prevKeyword = useRef(keyword);
+  const prevTag = useRef(tag);
 
   useEffect(() => {
-    if (!hasNextPage || isFetchingNextPage) {
-      return;
+    if (
+      prevCategory.current !== category ||
+      prevKeyword.current !== keyword ||
+      prevTag.current !== tag
+    ) {
+      setPage(1);
+      prevCategory.current = category;
+      prevKeyword.current = keyword;
+      prevTag.current = tag;
     }
+  }, [category, keyword, tag]);
+  const { data, isError, error, isLoading } = useBlogLists({
+    keyword,
+    category,
+    tag,
+    page,
+    limit: PAGE_SIZE,
+  });
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { root: null, rootMargin: "200px", threshold: 0 }
-    );
-    const target = observerRef.current;
-    if (target) observer.observe(target);
-    return () => {
-      observer.disconnect();
-    };
-  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
+  const pinnedData = data?.pinned ?? null;
+  const allBlogs: BlogForm[] = data?.result ?? [];
+  const totalPages: number = data?.totalPages ?? 1;
 
   if (isError) {
-    const message = error?.message;
-    toast.error(`Error: ${message}`);
+    toast.error(`Error: ${error?.message}`);
   }
 
   if (isLoading) {
@@ -74,10 +64,13 @@ export default function BlogMain() {
     );
   }
 
-  // Split blogs into sections for mixed layout
-  const featurePosts = allBlogs.slice(0, 2);
-  const listPosts = allBlogs.slice(2, 6);
-  const gridPosts = allBlogs.slice(6);
+  const smallCards = page === 1 ? allBlogs.slice(0, SMALL_CARD_COUNT) : [];
+  const listPosts = page === 1 ? allBlogs.slice(SMALL_CARD_COUNT) : allBlogs;
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="pt-10">
@@ -85,7 +78,7 @@ export default function BlogMain() {
         <div className="flex items-center gap-2.5 mb-8">
           <span className="text-sm text-muted-foreground">Filtered by</span>
           <button
-            onClick={() => setTag("")}
+            onClick={() => { setTag(""); setPage(1); }}
             className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium hover:bg-destructive/10 hover:text-destructive transition-supanova cursor-pointer"
           >
             # {tag} ×
@@ -93,64 +86,87 @@ export default function BlogMain() {
         </div>
       )}
 
-      {/* Pinned Post */}
-      <BlogPinnedPost pinnedData={pinnedData} />
+      {/* Pinned Post — only on page 1 */}
+      {page === 1 && <BlogPinnedPost pinnedData={pinnedData} />}
 
-      {/* Feature Section — 2 large posts side by side */}
-      {featurePosts.length > 0 && (
-        <ScrollReveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-16">
-            {featurePosts.map((blog, i) => (
-              <ScrollReveal key={blog.id} delay={i * 100}>
-                <BlogCard blog={blog} variant="feature" />
+      {/* Small Cards Grid — only on page 1 */}
+      {smallCards.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-16">
+          {smallCards.map((blog, i) => (
+            <ScrollReveal key={blog.id} delay={i * 80}>
+              <BlogCard blog={blog} size="small" />
+            </ScrollReveal>
+          ))}
+        </div>
+      )}
+
+      {/* List Section */}
+      {listPosts.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Latest</h2>
+            <div className="flex-1 h-px bg-border/50" />
+          </div>
+          <div>
+            {listPosts.map((blog, i) => (
+              <ScrollReveal key={blog.id} delay={i * 60}>
+                <BlogCard blog={blog} size="list" />
               </ScrollReveal>
             ))}
           </div>
-        </ScrollReveal>
+        </div>
       )}
 
-      {/* List Section — editorial style */}
-      {listPosts.length > 0 && (
-        <ScrollReveal>
-          <div className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Latest</h2>
-              <div className="flex-1 h-px bg-border/50" />
-            </div>
-            <div>
-              {listPosts.map((blog, i) => (
-                <ScrollReveal key={blog.id} delay={i * 80}>
-                  <BlogCard blog={blog} variant="list" />
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </ScrollReveal>
-      )}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-1.5 py-10">
+          <button
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page === 1}
+            className="w-9 h-9 flex items-center justify-center rounded-full transition-supanova hover:bg-secondary disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
 
-      {/* Grid Section — card grid */}
-      {gridPosts.length > 0 && (
-        <ScrollReveal>
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-6">
-              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">More Posts</h2>
-              <div className="flex-1 h-px bg-border/50" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {gridPosts.map((blog, i) => (
-                <ScrollReveal key={blog.id} delay={i * 80}>
-                  <BlogCard blog={blog} variant="card" />
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </ScrollReveal>
-      )}
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((p) => {
+              if (totalPages <= 7) return true;
+              if (p === 1 || p === totalPages) return true;
+              if (Math.abs(p - page) <= 1) return true;
+              return false;
+            })
+            .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+              if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
+              acc.push(p);
+              return acc;
+            }, [])
+            .map((item, idx) =>
+              item === "..." ? (
+                <span key={`dot-${idx}`} className="w-9 h-9 flex items-center justify-center text-muted-foreground/40 text-sm">
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={item}
+                  onClick={() => handlePageChange(item as number)}
+                  className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-supanova cursor-pointer ${
+                    page === item
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-secondary text-muted-foreground"
+                  }`}
+                >
+                  {item}
+                </button>
+              )
+            )}
 
-      <div ref={observerRef} />
-      {isFetchingNextPage && (
-        <div className="flex justify-center py-8">
-          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/30" />
+          <button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
+            className="w-9 h-9 flex items-center justify-center rounded-full transition-supanova hover:bg-secondary disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       )}
     </div>

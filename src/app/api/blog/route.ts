@@ -17,6 +17,7 @@ const selectFields = {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const cursor = searchParams.get("cursor");
+  const page = searchParams.get("page");
   const limit = Number(searchParams.get("limit"));
   const keyword = searchParams.get("keyword");
   const category = Number(searchParams.get("category"));
@@ -46,6 +47,43 @@ export async function GET(request: Request) {
   };
 
   try {
+    // Page-based pagination
+    if (page !== null) {
+      const pageNum = Math.max(1, Number(page));
+      const skip = (pageNum - 1) * limit;
+
+      const [pinned, posts, totalCount] = await Promise.all([
+        pageNum === 1
+          ? prisma.blog.findFirst({
+              where: { deletedAt: null, pinnedYn: true, ...privateFilter },
+              orderBy: { id: "desc" },
+              select: { ...selectFields, content: true },
+            })
+          : null,
+        prisma.blog.findMany({
+          where: { ...baseWhere, pinnedYn: false },
+          orderBy: { id: "desc" },
+          skip,
+          take: limit,
+          select: selectFields,
+        }),
+        prisma.blog.count({
+          where: { ...baseWhere, pinnedYn: false },
+        }),
+      ]);
+
+      const totalPages = Math.ceil(totalCount / limit);
+
+      return NextResponse.json({
+        pinned: pinned || null,
+        result: posts,
+        totalCount,
+        totalPages,
+        currentPage: pageNum,
+      });
+    }
+
+    // Legacy cursor-based pagination
     if (!cursor) {
       const [pinned, posts] = await Promise.all([
         prisma.blog.findFirst({

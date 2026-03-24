@@ -31,9 +31,9 @@ export default function NavLink({ href, children }: Props) {
         }
       }}
       className={cn(
-        "px-3 py-2 rounded-xl text-muted-foreground transition-all duration-200",
-        "hover:text-foreground hover:bg-accent",
-        href === path && "text-foreground bg-accent font-semibold"
+        "px-3 py-2 rounded-xl text-muted-foreground transition-supanova",
+        "hover:text-foreground",
+        href === path && "text-foreground font-semibold"
       )}
     >
       {children}

@@ -34,16 +34,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css"
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-6xl px-5 sm:px-8 lg:px-10 mx-auto min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-6xl px-5 sm:px-8 lg:px-10 mx-auto min-h-[100dvh]`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider>
             <ReactQueryProvider>
               <Header />
               <CategoryNav />
-              <main className="animate-fade-in pb-20">{children}</main>
+              <main className="animate-fade-in pb-24">{children}</main>
               <Toaster position="bottom-center" richColors />
             </ReactQueryProvider>
           </SessionProvider>

@@ -17,13 +17,13 @@ export default function CategoryNav() {
 
   if (from === "/guestbook" || from === "/about") return;
   return (
-    <div className="flex items-center gap-2 pb-5 border-b border-border/50 overflow-x-auto scrollbar-none -mx-5 px-5 sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10">
+    <div className="flex items-center gap-2 pb-6 overflow-x-auto scrollbar-none -mx-5 px-5 sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10">
       <button
         className={cn(
-          "shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer",
+          "shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-supanova cursor-pointer",
           category === 0
-            ? "bg-foreground text-background shadow-md"
-            : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-accent"
+            ? "bg-foreground text-background shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
         )}
         onClick={() => setCategory(0)}
       >
@@ -34,10 +34,10 @@ export default function CategoryNav() {
           <button
             key={cat.id}
             className={cn(
-              "shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer",
+              "shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-supanova cursor-pointer",
               category === cat.id
-                ? "bg-foreground text-background shadow-md"
-                : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-accent"
+                ? "bg-foreground text-background shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             )}
             onClick={() => setCategory(cat.id)}
           >

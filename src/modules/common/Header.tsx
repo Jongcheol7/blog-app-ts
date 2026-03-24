@@ -31,10 +31,10 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-40 flex items-center justify-between px-5 py-3.5 mb-6 -mx-5 sm:-mx-8 lg:-mx-10 transition-all duration-300 ${
+      className={`sticky top-3 z-40 flex items-center justify-between px-5 py-3 mb-8 rounded-2xl transition-supanova ${
         scrolled
-          ? "glass border-b border-border/40 shadow-sm"
-          : "bg-background/0 border-b border-transparent"
+          ? "glass-nav"
+          : "bg-transparent"
       }`}
     >
       <HeaderLogo />
@@ -44,13 +44,13 @@ export default function Header() {
       {isMobile && (
         <div className="flex items-center gap-1">
           <button
-            className="p-2.5 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer"
+            className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground transition-supanova cursor-pointer"
             onClick={() => setSearchClick(!searchClick)}
           >
             <Search className="w-[18px] h-[18px]" />
           </button>
           <button
-            className="p-2.5 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer"
+            className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground transition-supanova cursor-pointer"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <Menu className="w-[18px] h-[18px]" />

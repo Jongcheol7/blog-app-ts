@@ -43,73 +43,75 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ── Light: Clean Structural (Supanova) ── */
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.98 0.001 260);
-  --foreground: oklch(0.12 0.01 260);
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.09 0.01 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.12 0.01 260);
+  --card-foreground: oklch(0.09 0.01 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.12 0.01 260);
-  --primary: oklch(0.45 0.2 265);
+  --popover-foreground: oklch(0.09 0.01 260);
+  --primary: oklch(0.55 0.15 250);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.96 0.003 260);
-  --secondary-foreground: oklch(0.25 0.01 260);
-  --muted: oklch(0.955 0.003 260);
-  --muted-foreground: oklch(0.45 0.015 260);
-  --accent: oklch(0.96 0.015 265);
-  --accent-foreground: oklch(0.3 0.15 265);
+  --secondary: oklch(0.965 0.002 260);
+  --secondary-foreground: oklch(0.3 0.01 260);
+  --muted: oklch(0.96 0.002 260);
+  --muted-foreground: oklch(0.45 0.01 260);
+  --accent: oklch(0.96 0.01 250);
+  --accent-foreground: oklch(0.35 0.12 250);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.93 0.003 260);
-  --input: oklch(0.91 0.003 260);
-  --ring: oklch(0.45 0.2 265);
+  --border: oklch(0.925 0.002 260);
+  --input: oklch(0.91 0.002 260);
+  --ring: oklch(0.55 0.15 250);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.98 0.001 260);
-  --sidebar-foreground: oklch(0.12 0.01 260);
-  --sidebar-primary: oklch(0.45 0.2 265);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.09 0.01 260);
+  --sidebar-primary: oklch(0.55 0.15 250);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0.015 265);
-  --sidebar-accent-foreground: oklch(0.3 0.15 265);
-  --sidebar-border: oklch(0.93 0.003 260);
-  --sidebar-ring: oklch(0.45 0.2 265);
+  --sidebar-accent: oklch(0.96 0.01 250);
+  --sidebar-accent-foreground: oklch(0.35 0.12 250);
+  --sidebar-border: oklch(0.925 0.002 260);
+  --sidebar-ring: oklch(0.55 0.15 250);
 }
 
+/* ── Dark: Vantablack Luxe (Supanova) ── */
 .dark {
-  --background: oklch(0.1 0.01 265);
-  --foreground: oklch(0.94 0.005 260);
-  --card: oklch(0.14 0.01 265);
-  --card-foreground: oklch(0.94 0.005 260);
-  --popover: oklch(0.14 0.01 265);
-  --popover-foreground: oklch(0.94 0.005 260);
-  --primary: oklch(0.7 0.2 265);
-  --primary-foreground: oklch(0.1 0 0);
-  --secondary: oklch(0.18 0.01 265);
-  --secondary-foreground: oklch(0.94 0.005 260);
-  --muted: oklch(0.18 0.01 265);
-  --muted-foreground: oklch(0.55 0.015 260);
-  --accent: oklch(0.2 0.02 265);
-  --accent-foreground: oklch(0.8 0.15 265);
+  --background: oklch(0.08 0.01 260);
+  --foreground: oklch(0.95 0.005 80);
+  --card: oklch(0.12 0.01 260);
+  --card-foreground: oklch(0.95 0.005 80);
+  --popover: oklch(0.12 0.01 260);
+  --popover-foreground: oklch(0.95 0.005 80);
+  --primary: oklch(0.7 0.15 250);
+  --primary-foreground: oklch(0.08 0 0);
+  --secondary: oklch(0.15 0.01 260);
+  --secondary-foreground: oklch(0.9 0.005 80);
+  --muted: oklch(0.15 0.01 260);
+  --muted-foreground: oklch(0.5 0.01 260);
+  --accent: oklch(0.17 0.015 250);
+  --accent-foreground: oklch(0.8 0.12 250);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.2 0.01 265);
-  --input: oklch(0.22 0.01 265);
-  --ring: oklch(0.7 0.2 265);
+  --border: oklch(0.17 0.01 260);
+  --input: oklch(0.19 0.01 260);
+  --ring: oklch(0.7 0.15 250);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.14 0.01 265);
-  --sidebar-foreground: oklch(0.94 0.005 260);
-  --sidebar-primary: oklch(0.7 0.2 265);
-  --sidebar-primary-foreground: oklch(0.94 0.005 260);
-  --sidebar-accent: oklch(0.2 0.02 265);
-  --sidebar-accent-foreground: oklch(0.8 0.15 265);
-  --sidebar-border: oklch(0.2 0.01 265);
-  --sidebar-ring: oklch(0.7 0.2 265);
+  --sidebar: oklch(0.12 0.01 260);
+  --sidebar-foreground: oklch(0.95 0.005 80);
+  --sidebar-primary: oklch(0.7 0.15 250);
+  --sidebar-primary-foreground: oklch(0.95 0.005 80);
+  --sidebar-accent: oklch(0.17 0.015 250);
+  --sidebar-accent-foreground: oklch(0.8 0.12 250);
+  --sidebar-border: oklch(0.17 0.01 260);
+  --sidebar-ring: oklch(0.7 0.15 250);
 }
 
 @layer base {
@@ -118,89 +120,108 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Pretendard', var(--font-geist-sans), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    word-break: keep-all;
   }
   html {
     scroll-behavior: smooth;
   }
 }
 
-/* Animations */
+/* ── Supanova Motion Signature ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(2rem); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes shimmer {
   from { background-position: -200% 0; }
   to { background-position: 200% 0; }
 }
-@keyframes subtle-float {
+@keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  50% { transform: translateY(-8px); }
 }
 
 .animate-fade-in {
   animation: fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .animate-fade-in-up {
-  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Stagger children */
+/* Stagger children — Supanova cascade */
+.stagger-children > * {
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
-.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
-.stagger-children > *:nth-child(7) { animation-delay: 360ms; }
-.stagger-children > *:nth-child(8) { animation-delay: 420ms; }
-.stagger-children > *:nth-child(9) { animation-delay: 480ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 80ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 160ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 320ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 400ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 480ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 560ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 640ms; }
 
-/* Glassmorphism */
-.glass {
-  background: oklch(1 0 0 / 60%);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+/* ── Floating Glass Navigation (Supanova) ── */
+.glass-nav {
+  background: oklch(1 0 0 / 50%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid oklch(0 0 0 / 5%);
+  box-shadow: 0 4px 30px -10px oklch(0 0 0 / 8%);
 }
-.dark .glass {
-  background: oklch(0.1 0.01 265 / 60%);
-}
-
-/* Premium card hover glow */
-.card-glow {
-  position: relative;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.card-glow::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 40px -12px oklch(0.45 0.2 265 / 20%);
-  pointer-events: none;
-}
-.card-glow:hover::after {
-  opacity: 1;
-}
-.dark .card-glow::after {
-  box-shadow: 0 8px 40px -12px oklch(0.7 0.2 265 / 15%);
+.dark .glass-nav {
+  background: oklch(0.08 0.01 260 / 50%);
+  border: 1px solid oklch(1 0 0 / 8%);
+  box-shadow: 0 4px 30px -10px oklch(0 0 0 / 30%);
 }
 
-/* Editor / ProseMirror */
+/* ── Double-Bezel Card (Supanova) ── */
+.card-bezel {
+  padding: 6px;
+  border-radius: 1.5rem;
+  background: oklch(0 0 0 / 3%);
+  ring: 1px oklch(0 0 0 / 5%);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-bezel:hover {
+  background: oklch(0 0 0 / 5%);
+  box-shadow: 0 20px 60px -15px oklch(0 0 0 / 10%);
+  transform: translateY(-4px);
+}
+.dark .card-bezel {
+  background: oklch(1 0 0 / 3%);
+  ring: 1px oklch(1 0 0 / 8%);
+}
+.dark .card-bezel:hover {
+  background: oklch(1 0 0 / 5%);
+  box-shadow: 0 20px 60px -15px oklch(0 0 0 / 40%);
+}
+
+.card-bezel-inner {
+  border-radius: calc(1.5rem - 6px);
+  overflow: hidden;
+  background: var(--card);
+  box-shadow: inset 0 1px 1px oklch(1 0 0 / 10%);
+}
+.dark .card-bezel-inner {
+  box-shadow: inset 0 1px 1px oklch(1 0 0 / 5%);
+}
+
+/* ── Supanova transition standard ── */
+.transition-supanova {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Editor / ProseMirror ── */
 .ProseMirror:focus {
   outline: none !important;
   box-shadow: none !important;
@@ -216,29 +237,46 @@
   font-size: 1.0625rem;
 }
 
-/* Code blocks */
+/* ── Code blocks ── */
 pre {
-  background-color: oklch(0.14 0.01 265);
+  background-color: oklch(0.1 0.01 260);
   color: oklch(0.93 0.005 260);
   padding: 1.25rem 1.5rem;
   border-radius: 1rem;
   overflow-x: auto;
   font-size: 0.875rem;
   line-height: 1.7;
-  border: 1px solid oklch(0.22 0.01 265);
+  border: 1px solid oklch(0.18 0.01 260);
 }
 code {
   font-family: var(--font-geist-mono), 'JetBrains Mono', monospace;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 5px; }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: oklch(0.82 0 0); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: oklch(0.7 0 0); }
-.dark ::-webkit-scrollbar-thumb { background: oklch(0.28 0 0); }
-.dark ::-webkit-scrollbar-thumb:hover { background: oklch(0.38 0 0); }
+.dark ::-webkit-scrollbar-thumb { background: oklch(0.22 0 0); }
+.dark ::-webkit-scrollbar-thumb:hover { background: oklch(0.32 0 0); }
 
-/* Hide scrollbar for category nav */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Eyebrow pill badge (Supanova) ── */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  background: oklch(0.55 0.15 250 / 10%);
+  color: oklch(0.55 0.15 250);
+}
+.dark .eyebrow {
+  background: oklch(0.7 0.15 250 / 15%);
+  color: oklch(0.7 0.15 250);
+}

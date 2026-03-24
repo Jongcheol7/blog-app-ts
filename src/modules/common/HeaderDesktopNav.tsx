@@ -15,12 +15,12 @@ export default function HeaderDesktopNav() {
 
   return (
     <nav className="flex items-center gap-0.5">
-      <div className="flex items-center gap-0.5 text-sm font-medium">
+      <div className="flex items-center gap-0.5 text-[13px] font-medium">
         <button
-          className="p-2.5 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer"
+          className="p-2.5 rounded-xl text-muted-foreground hover:text-foreground transition-supanova cursor-pointer"
           onClick={() => setSearchClick(!searchClick)}
         >
-          <Search className="w-[18px] h-[18px]" />
+          <Search className="w-[16px] h-[16px]" />
         </button>
 
         <NavLink href="/blog">Blog</NavLink>
@@ -29,7 +29,7 @@ export default function HeaderDesktopNav() {
         {isAdmin && <NavLink href="/admin">Admin</NavLink>}
         {isAdmin && <NavLink href="/write">Write</NavLink>}
 
-        <div className="w-px h-5 bg-border mx-1.5" />
+        <div className="w-px h-4 bg-border/60 mx-2" />
 
         <button
           onClick={async () => {
@@ -39,16 +39,16 @@ export default function HeaderDesktopNav() {
               await signIn();
             }
           }}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-muted-foreground hover:text-foreground transition-supanova cursor-pointer"
         >
           {session ? (
             <>
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
               <span>Logout</span>
             </>
           ) : (
             <>
-              <LogIn className="w-4 h-4" />
+              <LogIn className="w-3.5 h-3.5" />
               <span>Login</span>
             </>
           )}

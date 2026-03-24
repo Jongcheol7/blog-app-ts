@@ -36,6 +36,6 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     uploadUrl: signedUrl,
-    fileUrl: `${process.env.CLOUDFRONT_DOMAIN_NAME}/${fileName}`,
+    fileUrl: `${process.env.R2_PUBLIC_URL}/${fileName}`,
   });
 }

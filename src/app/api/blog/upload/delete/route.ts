@@ -1,14 +1,6 @@
-import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
-
-const Bucket = process.env.AWS_BUCKET_NAME;
-const s3 = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-  },
-});
+import { r2Client, R2_BUCKET } from "@/lib/r2";
 
 export async function POST(request: Request) {
   const { imageUrl, folder } = await request.json();
@@ -18,16 +10,16 @@ export async function POST(request: Request) {
 
   try {
     if (s3Key) {
-      await s3.send(
+      await r2Client.send(
         new DeleteObjectCommand({
-          Bucket,
+          Bucket: R2_BUCKET,
           Key: s3Key,
         })
       );
     }
     return NextResponse.json({ success: "사진 삭제 성공" }, { status: 200 });
   } catch (err) {
-    console.log("S3 삭제 실패:", err);
+    console.log("R2 삭제 실패:", err);
     return NextResponse.json({ error: "사진 삭제 실패" }, { status: 500 });
   }
 }

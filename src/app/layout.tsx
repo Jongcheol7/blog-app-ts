@@ -42,14 +42,16 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-6xl px-5 sm:px-8 lg:px-10 mx-auto min-h-[100dvh]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-[100dvh]`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider>
             <ReactQueryProvider>
-              <Header />
-              <CategoryNav />
-              <main className="animate-fade-in pb-24">{children}</main>
+              <div className="max-w-6xl px-5 sm:px-8 lg:px-10 mx-auto">
+                <Header />
+                <CategoryNav />
+                <main className="animate-fade-in pb-24">{children}</main>
+              </div>
               <Toaster position="bottom-center" richColors />
             </ReactQueryProvider>
           </SessionProvider>

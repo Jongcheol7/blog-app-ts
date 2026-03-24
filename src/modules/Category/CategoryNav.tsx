@@ -17,7 +17,7 @@ export default function CategoryNav() {
 
   if (from === "/guestbook" || from === "/about") return;
   return (
-    <div className="flex items-center gap-2 pb-6 overflow-x-auto scrollbar-none -mx-5 px-5 sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10">
+    <div className="flex items-center gap-2 pb-6 overflow-x-auto scrollbar-none">
       <button
         className={cn(
           "shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-supanova cursor-pointer",

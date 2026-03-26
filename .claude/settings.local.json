@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Project-blog/blog-app-ts/blog-app-ts -name *.d.ts -o -path */types/*)",
+      "Bash(find /c/Project-blog/blog-app-ts/blog-app-ts -maxdepth 3 -path */types/* -type f)",
+      "Bash(find /c/Project-blog/blog-app-ts/blog-app-ts/src/modules/common -type f -name *.tsx -o -name *.ts)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(npx next:*)",
+      "Bash(cd:*)",
+      "Bash(git fetch:*)",
+      "Bash(git stash:*)",
+      "Bash(git pull:*)",
+      "WebFetch(domain:jolly-unicorn-ddbc7c.netlify.app)",
+      "Bash(curl -s https://jolly-unicorn-ddbc7c.netlify.app/)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -sL https://raw.githubusercontent.com/uxjoseph/supanova-design-skill/main/soft-skill/SKILL.md)",
+      "Bash(curl -sL https://raw.githubusercontent.com/uxjoseph/supanova-design-skill/main/taste-skill/SKILL.md)",
+      "Bash(claude mcp:*)",
+      "Bash(find /c/Project-blog/blog-app-ts/blog-app-ts -name .env* -type f)",
+      "Bash(ls:*)",
+      "Bash(grep -i \"endpoint\\\\|cors\\\\|cross\" /c/Project-blog/blog-app-ts/blog-app-ts/.env*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(cat:*)",
+      "Bash(grep -r \"url\\\\|canonical\" /c/Project-blog/blog-app-ts/blog-app-ts/src/app --include=*.tsx --include=*.ts)",
+      "Bash(grep -r \"link rel\\\\|meta property\\\\|og:\" /c/Project-blog/blog-app-ts/blog-app-ts/src --include=*.tsx --include=*.ts)",
+      "Bash(for file:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Project-blog/blog-app-ts/blog-app-ts/**)",
+      "Bash(done)",
+      "Bash(grep:*)"
+    ]
+  }
+}
